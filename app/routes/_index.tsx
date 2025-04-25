@@ -9,14 +9,12 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div>
-
-
+    <div className="flex h-screen items-start justify-center bg-slate-200">
+      <div className="flex  items-center justify-center "> 
+        <img src="/public/RTR__2_-removebg-preview.png" className=""  alt="logo"/>
       </div>
-
-    
     </div>
+ 
   );
 }
 
