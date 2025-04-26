@@ -124,3 +124,13 @@ class Usuarios(models.Model):
     class Meta:
         managed = False
         db_table = 'usuarios'
+        
+class Chaves(models.Model):
+    id = models.AutoField(primary_key=True)  # O Django lida automaticamente com a identidade (auto increment)
+    nome = models.CharField(max_length=1)  # Substitui o tipo NVARCHAR(1)
+    valor = models.IntegerField()  # Substitui o tipo INT
+
+    class Meta:
+        managed = False  # Se você já tiver a tabela no banco de dados e não quiser que o Django a crie ou altere
+        db_table = 'chaves'  # Nome da tabela no banco de dados
+
