@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTR", "RTR.csproj", "{32495984-4E3B-9559-9FA0-E4025F71BB74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32495984-4E3B-9559-9FA0-E4025F71BB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32495984-4E3B-9559-9FA0-E4025F71BB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32495984-4E3B-9559-9FA0-E4025F71BB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32495984-4E3B-9559-9FA0-E4025F71BB74}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A4CE4A8-155A-4C9A-8F42-0E81C0EF68FA}
+	EndGlobalSection
+EndGlobal
