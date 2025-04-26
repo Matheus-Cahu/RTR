@@ -51,3 +51,5 @@ const userList: User[] = [
     chave: "C"
   }
 ];
+
+export default userList;
