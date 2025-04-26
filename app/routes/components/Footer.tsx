@@ -6,13 +6,13 @@ export default function Footer() {
       <a href="loja">
         <ShoppingCart className="text-white w-8 h-8" />
       </a>
-      <a href="meusjogos">
+      <a href="jogos">
         <PlayCircle className="text-white w-8 h-8" />
       </a>
       <a href="ranking">
         <Trophy className="text-white w-8 h-8" />
       </a>
-      <a href="feed">
+      <a href="profile">
         <LayoutDashboard className="text-white w-8 h-8" />
       </a>
     </footer>

@@ -2,7 +2,7 @@ import userList from "~/data/users";
 
 export default function Ranking() {
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen bg-verde1-claro p-6 rounded-lg mb-8">
+    <div className="flex flex-col items-center justify-center w-full min-h-screen bg-verde1-claro p-6 rounded-lg mb-14">
       <div className="grid grid-cols-1 gap-6 w-full max-w-5xl">
         {userList.map((user) => (
           <div
