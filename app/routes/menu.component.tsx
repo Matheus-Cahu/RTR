@@ -1,3 +1,4 @@
+import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
 
@@ -43,6 +44,7 @@ export default function components() {
            <div className="flex flex-col gap-4">
           <Input label="Template" placeholder="Template"></Input>
           <InputPicture></InputPicture>
+          <Footer></Footer>
           </div>
           </div>
     );
