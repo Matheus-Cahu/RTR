@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rtr.apps.RtrConfig',
     'rest_framework',
     'corsheaders',
+    'mssql',
     
 ]
 
@@ -87,7 +88,7 @@ DATABASES = {
         'HOST': 'localhost',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-            'Trusted_Connection': 'yes',
+            'trusted_connection': 'yes',
             
         },
     }
