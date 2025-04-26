@@ -1,3 +1,4 @@
+import Card from "./components/Card";
 import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
@@ -44,9 +45,8 @@ export default function components() {
       </div>
       <div className="flex flex-col gap-4">
         <Input label="Template" placeholder="Template"></Input>
-        <InputPicture></InputPicture>
-        <Rules></Rules>
         <Footer></Footer>
+       <Card></Card>
       </div>
     </div>
   );
