@@ -38,7 +38,7 @@ export default function Card({ jogo }: CardProps) {
         {/* Segunda imagem */}
         <div className="flex flex-col items-center">
           <img
-            src={jogo.imagem_2} // Imagem do jogador 2
+            src={jogo.imagem_J2} // Imagem do jogador 2
             alt={jogo.jogador_2}
             className="w-24 h-24 object-cover rounded-full shadow-lg"
           />

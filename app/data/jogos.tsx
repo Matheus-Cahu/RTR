@@ -13,7 +13,7 @@ interface Jogo {
   vencedor: string;
   data: string;
   horario: string;
-  status: "Agendado" | "Finalizado";
+  status: "Agendado" | "Finalizado" | "Solicitado";
   local: string;
 }
 
@@ -39,7 +39,7 @@ const jogos: Jogo[] = [
     jogador_2: userList[3].name, // Gustavo
     imagem_J1: "/tennisGameIMGStock.jpg",
     imagem_J2: "/tennisGameIMGStock.jpg",
-    imagem: "/images/tennisGameIMGStock.jpg",
+    imagem: "tennisGameIMGStock.jpg",
     jog1_g_1: 7,
     jog1_g_2: 5,
     jog2_g_1: 6,
@@ -55,7 +55,7 @@ const jogos: Jogo[] = [
     jogador_2: userList[5].name, // Felipe
     imagem_J1: "/tennisGameIMGStock.jpg",
     imagem_J2: "/tennisGameIMGStock.jpg",
-    imagem: "/images/tennisGameIMGStock.jpg",
+    imagem: "tennisGameIMGStock.jpg",
     jog1_g_1: 6,
     jog1_g_2: 4,
     jog2_g_1: 7,
@@ -71,7 +71,7 @@ const jogos: Jogo[] = [
     jogador_2: userList[7].name, // Rafael
     imagem_J1: "/tennisGameIMGStock.jpg",
     imagem_J2: "/tennisGameIMGStock.jpg",
-    imagem: "/images/tennisGameIMGStock.jpg",
+    imagem: "tennisGameIMGStock.jpg",
     jog1_g_1: 5,
     jog1_g_2: 6,
     jog2_g_1: 7,
@@ -87,7 +87,7 @@ const jogos: Jogo[] = [
     jogador_2: userList[0].name, // Lucas
     imagem_J1: "/tennisGameIMGStock.jpg",
     imagem_J2: "/tennisGameIMGStock.jpg",
-    imagem: "/images/tennisGameIMGStock.jpg",
+    imagem: "tennisGameIMGStock.jpg",
     jog1_g_1: 6,
     jog1_g_2: 7,
     jog2_g_1: 5,
