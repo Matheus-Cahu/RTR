@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-import {
-  ShoppingCart,
-  PlayCircle,
-  Trophy,
-  LayoutDashboard,
-} from "lucide-react";
-=======
+
 import { ShoppingCart, PlayCircle, Trophy, User } from 'lucide-react';
->>>>>>> 95ed7a43d9092a2662d05cbf50b598ceebb7da45
+
 
 export default function Footer() {
   return (
