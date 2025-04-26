@@ -11,7 +11,10 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
- <div></div>
+ <div className="flex flex-col">
+<Link to="/splash">Splash</Link>
+<Link to="/menu">Dev Menu</Link>
+ </div>
   );
 }
 
