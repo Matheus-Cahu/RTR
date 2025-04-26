@@ -11,6 +11,10 @@ body {
   }
 }
 
+.title{
+  @apply text-2xl font-bold text-black dark:text-white;
+}
+
 .btn-verde1{
   @apply bg-green-600 text-white font-bold py-2 px-4 rounded-md;
 }
@@ -62,37 +66,4 @@ body {
 }
 .btn-limao1-claro {
   @apply bg-lime-200 text-black font-bold py-2 px-4 rounded-md;
-}
-
-/* Botões arredondados (btnr) para verde-limão */
-.btnr-limao1 {
-  @apply bg-lime-600 text-white font-bold py-2 px-8 rounded-full;
-}
-.btnr-limao1-vazado {
-  @apply bg-transparent text-lime-600 font-bold py-2 px-8 rounded-full border-2 border-lime-600;
-}
-.btnr-limao1-claro {
-  @apply bg-lime-200 text-black font-bold py-2 px-8 rounded-full;
-}
-
-/* Botões arredondados (btnr) para azul */
-.btnr-azul1 {
-  @apply bg-blue-600 text-white font-bold py-2 px-8 rounded-full;
-}
-.btnr-azul1-vazado {
-  @apply bg-transparent text-blue-600 font-bold py-2 px-8 rounded-full border-2 border-blue-600;
-}
-.btnr-azul1-claro {
-  @apply bg-blue-200 text-black font-bold py-2 px-8 rounded-full;
-}
-
-/* Botões arredondados (btnr) para vermelho */
-.btnr-vermelho1 {
-  @apply bg-red-600 text-white font-bold py-2 px-8 rounded-full;
-}
-.btnr-vermelho1-vazado {
-  @apply bg-transparent text-red-600 font-bold py-2 px-8 rounded-full border-2 border-red-600;
-}
-.btnr-vermelho1-claro {
-  @apply bg-red-200 text-black font-bold py-2 px-8 rounded-full;
 }
