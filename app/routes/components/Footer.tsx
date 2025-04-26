@@ -1,4 +1,4 @@
-import { ShoppingCart , PlayCircle, Trophy, LayoutDashboard} from 'lucide-react';
+import { ShoppingCart, PlayCircle, Trophy, User } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -13,7 +13,7 @@ export default function Footer() {
         <Trophy className="text-white w-8 h-8" />
       </a>
       <a href="profile">
-        <LayoutDashboard className="text-white w-8 h-8" />
+        <User className="text-white w-8 h-8" />
       </a>
     </footer>
   );

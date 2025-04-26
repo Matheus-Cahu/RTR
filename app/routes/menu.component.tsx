@@ -1,8 +1,10 @@
+import userList from "~/data/users";
 import Card from "./components/Card";
 import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
+import Select from "./components/Select";
 
 export default function components() {
   return (
@@ -47,6 +49,7 @@ export default function components() {
         <Input label="Template" placeholder="Template"></Input>
         <Footer></Footer>
        <Card></Card>
+       <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
       </div>
     </div>
   );
