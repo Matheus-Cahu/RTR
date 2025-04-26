@@ -3,7 +3,7 @@ import Input from "./components/Input"
 export default function email(){
     return(
         <div className="flex flex-col items-center gap-4 justify-center h-screen bg-cover bg-center bg-white">
-          <h1 className="title" style={{ color: 'black' }}>Insira seu email para continuar</h1>  
+          <h1 className="h1" style={{ color: 'black' }}>Insira seu email para continuar</h1>  
           <Input label="Email" placeholder="Insira seu melhor email"></Input>
           <button 
             onClick={() => window.location.href = '/register/perfil'} 
