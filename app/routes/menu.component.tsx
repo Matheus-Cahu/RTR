@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
+import Shop from "./components/Shop";
 
 export default function components() {
   return (
@@ -46,7 +47,8 @@ export default function components() {
       <div className="flex flex-col gap-4">
         <Input label="Template" placeholder="Template"></Input>
         <Footer></Footer>
-       <Card></Card>
+       
+       <Shop></Shop>
       </div>
     </div>
   );
