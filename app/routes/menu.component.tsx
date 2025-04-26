@@ -8,6 +8,9 @@ import Shop from "./components/Shop";
 import Select from "./components/Select";
 import Noti from "./components/Noti";
 
+import jogos from "~/data/jogos";
+
+
 export default function components() {
   return (
     <div className="flex flex-row gap-4">
@@ -52,7 +55,7 @@ export default function components() {
         <Footer></Footer>
        
        <Shop></Shop>
-       
+4fc2344573181c0c394baa0bef96c6a749efa5
        <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
        <Noti></Noti>
       </div>
