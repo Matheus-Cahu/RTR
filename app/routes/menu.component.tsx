@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
+import Shop from "./components/Shop";
 import Select from "./components/Select";
 
 export default function components() {
@@ -48,6 +49,8 @@ export default function components() {
       <div className="flex flex-col gap-4">
         <Input label="Template" placeholder="Template"></Input>
         <Footer></Footer>
+       
+       <Shop></Shop>
        <Card></Card>
        <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
       </div>
