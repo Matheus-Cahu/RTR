@@ -11,7 +11,7 @@ interface Jogo {
   vencedor: string;
   data: string;
   horario: string;
-  status: "Agendado" | "Finalizado";
+  status: "Agendado" | "Finalizado" | "Solicitado";
   local: string;
 }
 

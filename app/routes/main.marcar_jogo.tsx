@@ -9,6 +9,7 @@ export default function marcar_jogo() {
       <form className="flex flex-col gap-4">
       <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
         <Input label="Local" placeholder="Local do jogo"></Input>
+        {/* Data Picker */}
         <button
           className="btn-azul mb-2"
         >

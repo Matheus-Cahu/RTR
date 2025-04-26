@@ -6,6 +6,7 @@ import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
 import Shop from "./components/Shop";
 import Select from "./components/Select";
+import jogos from "~/data/jogos";
 
 export default function components() {
   return (
@@ -51,7 +52,7 @@ export default function components() {
         <Footer></Footer>
        
        <Shop></Shop>
-       <Card></Card>
+       <Card jogo={jogos[0]}></Card>
        <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
       </div>
     </div>
