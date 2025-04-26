@@ -14,9 +14,9 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "target": "ES2022",
+    "target": "ESNext",
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,6 +25,7 @@
     "paths": {
       "~/*": ["./app/*"]
     },
+    "allowSyntheticDefaultImports": true,
 
     // Vite takes care of building everything, not tsc.
     "noEmit": true
