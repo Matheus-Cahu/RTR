@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RankingConfig(AppConfig):
+class RtrConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ranking'
+    name = 'rtr'
