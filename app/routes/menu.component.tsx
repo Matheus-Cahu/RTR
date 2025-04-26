@@ -1,4 +1,5 @@
 import Input from "./components/Input";
+import InputPicture from "./components/InputPicture";
 
 export default function components() {
     return (
@@ -39,7 +40,10 @@ export default function components() {
             <button className="btnr-limao1-vazado">Click Me</button>
             <button className="btnr-limao1-claro">Click Me</button>
           </div>
+          <div className="flex flex-col gap-4">
           <Input></Input>
+          <InputPicture></InputPicture>
+          </div>
           </div>
     );
 }
