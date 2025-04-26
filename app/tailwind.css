@@ -12,7 +12,15 @@ body {
 }
 
 .h1 {
-  @apply text-2xl font-montserrat text-black dark:text-white;
+  @apply text-2xl font-montserrat text-black;
+}
+
+.h1-center{
+  @apply text-2xl text-center font-montserrat text-black;
+}
+
+.h2-center{
+  @apply text-xl text-center font-montserrat text-black;
 }
 
 .btn-verde1 {
