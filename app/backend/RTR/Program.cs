@@ -3,15 +3,23 @@ using MeuProjetoApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionar serviços ao container
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()   // Permite requisições de qualquer origem
+              .AllowAnyHeader()   // Permite qualquer cabeçalho (Content-Type, Authorization, etc.)
+              .AllowAnyMethod();  // Permite todos os métodos HTTP (GET, POST, PUT, DELETE, etc.)
+    });
+});
+
+// Configurar os serviços básicos
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpsRedirection(options =>
-{
-    options.HttpsPort = 5001; // Ou outra porta de sua escolha
-});
-// Configurar a conexão com o PostgreSQL
+
+// Configurar a conexão com PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -24,8 +32,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Ativar CORS
+app.UseCors();
+
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

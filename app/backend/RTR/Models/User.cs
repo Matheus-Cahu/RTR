@@ -7,14 +7,21 @@ namespace MeuProjetoApi.Models
         // Usando construtor para inicializar as propriedades
         public User()
         {
-            ID = string.Empty;
+            ID = 0;
             Name = string.Empty;
-            UltimoPagamento = Array.Empty<DateTime>();
+            Email = string.Empty; // Valor padrão para Email
+            Ranking = 0; // Valor padrão para Ranking
+            Vitorias = 0;
+            Chave = 0;
+            Image = Array.Empty<byte>(); // Inicializa como um array vazio
         }
 
-        public string ID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
-        public DateTime[] UltimoPagamento { get; set; }
-        public int Ranking { get; set; }
+        public string Email { get; set; } // Campo para armazenar o email do usuário
+        public int Ranking { get; set; } // Garantido que não será nulo
+        public int Vitorias { get; set; }
+        public int Chave { get; set; }
+        public byte[] Image { get; set; } // Campo para armazenar a imagem como byte array
     }
 }
