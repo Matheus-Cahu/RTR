@@ -42,12 +42,15 @@ namespace MeuProjetoApi.Controllers
 
         // POST: api/Users
     // POST: api/Users
+// POST: api/Users
 [HttpPost]
 public async Task<ActionResult<User>> PostUser(User user)
 {
-    // Pega o maior ranking real, ou 0 se a tabela estiver vazia!
-    int maxRanking = await _context.Users.Select(u => u.Ranking).DefaultIfEmpty(0).MaxAsync();
-    user.Ranking = maxRanking + 1; // sobrescreve qualquer lixo do frontend
+    // Conta quantos usuários existem atualmente
+    int userCount = await _context.Users.CountAsync();
+
+    // O ranking será sempre igual ao total + 1
+    user.Ranking = userCount + 1;
 
     _context.Users.Add(user);
     try
