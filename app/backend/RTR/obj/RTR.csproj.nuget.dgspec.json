@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/RTR.csproj": {}
+    "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/RTR.csproj": {}
   },
   "projects": {
-    "/home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/RTR.csproj": {
+    "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/RTR.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/RTR.csproj",
+        "projectUniqueName": "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/RTR.csproj",
         "projectName": "RTR",
-        "projectPath": "/home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/RTR.csproj",
+        "projectPath": "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/RTR.csproj",
         "packagesPath": "/home/matheus-cahu/.nuget/packages/",
-        "outputPath": "/home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/obj/",
+        "outputPath": "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/matheus-cahu/.nuget/NuGet/NuGet.Config"
