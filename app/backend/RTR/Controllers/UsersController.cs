@@ -46,10 +46,29 @@ namespace MeuProjetoApi.Controllers
 [HttpPost]
 public async Task<ActionResult<User>> PostUser(User user)
 {
-    // Conta quantos usuários existem atualmente
-    int userCount = await _context.Users.CountAsync();
+    // Se NÃO tiver nenhum usuário, chave e ranking começam em 0 e 1
+    int nextChave = 0;
 
-    // O ranking será sempre igual ao total + 1
+    bool existeUsuario = await _context.Users.AnyAsync();
+    if (existeUsuario)
+    {
+        // Descobre a chave máxima atualmente usada
+        int maxChave = await _context.Users.MaxAsync(u => u.Chave);
+
+        // Conta quantos jogadores têm essa chave máxima
+        int quantidadeComMaxChave = await _context.Users.CountAsync(u => u.Chave == maxChave);
+
+        // Decide se incrementa ou mantém a chave
+        if (quantidadeComMaxChave >= 3)
+            nextChave = maxChave + 3;
+        else
+            nextChave = maxChave;
+    }
+
+    user.Chave = nextChave;
+
+    // Ranking: total atual de usuários + 1
+    int userCount = await _context.Users.CountAsync();
     user.Ranking = userCount + 1;
 
     _context.Users.Add(user);
