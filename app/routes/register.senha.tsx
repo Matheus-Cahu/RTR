@@ -11,7 +11,29 @@ export default function RegisterSenha() {
     setPassword(event.target.value); // Atualiza o estado da senha
   };
 
+  const handleRegister = async () => {
+    try {
+      const response = await fetch("http://localhost:5042/api/Users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify( userRegister ),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao cadastrar usuário");
+      }
+
+      console.log("Usuário cadastrado com sucesso");
+      navigate("/main/ranking"); // Redireciona para a página de ranking
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error);
+    }
+  };
+
   const handleNavigate = () => {
+    handleRegister(); // Chama a função de registro
     console.log("Dados do registro de usuário:", userRegister); // Exibe os dados no console
     navigate("/main/ranking"); // Redireciona para a página de ranking
   };

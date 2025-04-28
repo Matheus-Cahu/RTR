@@ -41,29 +41,33 @@ namespace MeuProjetoApi.Controllers
         }
 
         // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+    // POST: api/Users
+[HttpPost]
+public async Task<ActionResult<User>> PostUser(User user)
+{
+    // Pega o maior ranking real, ou 0 se a tabela estiver vazia!
+    int maxRanking = await _context.Users.Select(u => u.Ranking).DefaultIfEmpty(0).MaxAsync();
+    user.Ranking = maxRanking + 1; // sobrescreve qualquer lixo do frontend
+
+    _context.Users.Add(user);
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+        if (UserExists(user.ID))
         {
-            _context.Users.Add(user);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.ID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+            return Conflict();
         }
+        else
+        {
+            throw;
+        }
+    }
 
+    return CreatedAtAction("GetUser", new { id = user.ID }, user);
+}
         // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)

@@ -1,7 +1,19 @@
 import { Info, Link } from "lucide-react";
 import Ranking from "./components/Ranking";
+import { json, LoaderFunction } from "@remix-run/node"; // Apenas no loader
+import { useLoaderData } from "@remix-run/react"; // Para o lado do cliente
+
+export const loader: LoaderFunction = async () => {
+    const response = await fetch("http://localhost:5042/api/Users"); // URL corrigida
+    if (!response.ok) {
+        throw new Response("Erro ao buscar os dados", { status: response.status });
+    }
+    const data = await response.json();
+    return json(data); // Retorna os dados como JSON
+};
 
 export default function ranking(){
+    const userList = useLoaderData(); // Obtém os dados do loader
     return(
         <div>
             <h1 className="h1-center mb-6">Ranking</h1> 
@@ -14,7 +26,7 @@ export default function ranking(){
             <Info className="text-black w-8 h-8"/>
             </a>
             </div>
-            <Ranking />
+            <Ranking userList={userList}/>
         </div>
     )
 }

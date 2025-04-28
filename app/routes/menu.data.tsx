@@ -13,7 +13,6 @@ export const loader: LoaderFunction = async () => {
 
 export default function Data() {
     const userList = useLoaderData(); // Obtém os dados do loader
-
     return (
         <div className="flex flex-row gap-4">
             {userList
