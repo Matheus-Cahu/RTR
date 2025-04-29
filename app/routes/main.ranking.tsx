@@ -14,6 +14,7 @@ export const loader: LoaderFunction = async () => {
 
 export default function ranking(){
     const userList = useLoaderData(); // Obtém os dados do loader
+    console.log(userList);
     return(
         <div>
             <h1 className="h1-center mb-6">Ranking</h1> 

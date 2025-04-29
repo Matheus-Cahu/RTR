@@ -5,7 +5,7 @@ import { useNavigate } from "@remix-run/react";
 export default function RegisterSenha() {
   const navigate = useNavigate();
   const userRegister = useUserRegister(); // Obtém o objeto completo do contexto
-  const { setPassword, password } = userRegister; // Desestrutura as propriedades necessárias
+  const { setPassword, password, name, email, image } = userRegister; // Desestrutura as propriedades necessárias
 
   const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value); // Atualiza o estado da senha
@@ -13,12 +13,19 @@ export default function RegisterSenha() {
 
   const handleRegister = async () => {
     try {
+      // Cria um objeto FormData para enviar os dados como multipart/form-data
+      const formData = new FormData();
+      formData.append("Name", name);
+      formData.append("Email", email);
+      formData.append("Password", password);
+
+      if (image) {
+        formData.append("Image", image); // Adiciona a imagem ao FormData
+      }
+
       const response = await fetch("http://localhost:5042/api/Users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify( userRegister ),
+        body: formData, // Envia os dados como FormData
       });
 
       if (!response.ok) {
@@ -35,7 +42,6 @@ export default function RegisterSenha() {
   const handleNavigate = () => {
     handleRegister(); // Chama a função de registro
     console.log("Dados do registro de usuário:", userRegister); // Exibe os dados no console
-    navigate("/main/ranking"); // Redireciona para a página de ranking
   };
 
   return (

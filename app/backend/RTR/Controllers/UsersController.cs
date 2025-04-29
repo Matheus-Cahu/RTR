@@ -22,14 +22,19 @@ namespace MeuProjetoApi.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users.ToListAsync();
+
+            // Converte cada User para UserDto
+            var userDtos = users.Select(user => new UserDto(user)).ToList();
+
+            return Ok(userDtos);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -38,7 +43,10 @@ namespace MeuProjetoApi.Controllers
                 return NotFound();
             }
 
-            return user;
+            // Usa o construtor de UserDto para converter o objeto User
+            var userDto = new UserDto(user);
+
+            return Ok(userDto);
         }
 
         // POST: api/Users
@@ -64,15 +72,14 @@ namespace MeuProjetoApi.Controllers
                     nextChave = maxChave;
             }
 
-            // Converte a imagem para Base64, se fornecida
-            string? imageBase64 = null;
+            // Converte a imagem para BLOB, se fornecida
+            byte[]? imageBlob = null;
             if (userWithImage.Image != null)
             {
                 using (var memoryStream = new MemoryStream())
                 {
                     await userWithImage.Image.CopyToAsync(memoryStream);
-                    var imageBytes = memoryStream.ToArray();
-                    imageBase64 = Convert.ToBase64String(imageBytes);
+                    imageBlob = memoryStream.ToArray(); // Converte a imagem para um array de bytes
                 }
             }
 
@@ -82,7 +89,7 @@ namespace MeuProjetoApi.Controllers
                 Name = userWithImage.Name,
                 Email = userWithImage.Email,
                 Password = userWithImage.Password,
-                ImageBase64 = imageBase64, // Armazena a imagem como Base64
+                Img = imageBlob, // Armazena a imagem como BLOB
                 Chave = nextChave,
                 Ranking = await _context.Users.CountAsync() + 1 // Ranking: total atual de usuários + 1
             };

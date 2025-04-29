@@ -18,6 +18,8 @@ namespace MeuProjetoApi.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+
+        public string Password { get; set; }
         public int Ranking { get; set; }
         public int Vitorias { get; set; }
         public int Chave { get; set; }
