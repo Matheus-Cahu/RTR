@@ -1,16 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUserRegister } from "~/data/context/ContextUserRegister";
 
-export default function ImageInput() {
-  const [image, setImage] = useState(null);
-  const inputRef = useRef();
+export default function InputPicture() {
+  const { image, setImage } = useUserRegister(); // Usa o contexto para acessar e atualizar a imagem
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  function handleChange(e) {
-    const file = e.target.files[0];
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = ev => setImage(ev.target.result);
-      reader.readAsDataURL(file);
+      setImage(file); // Atualiza o estado global com o arquivo selecionado
     }
   }
 
@@ -18,9 +17,9 @@ export default function ImageInput() {
     if (!image && inputRef.current) inputRef.current.click();
   }
 
-  function handleRemove(e) {
+  function handleRemove(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
-    setImage(null);
+    setImage(null); // Remove a imagem do estado global
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -45,7 +44,7 @@ export default function ImageInput() {
           <>
             <motion.img
               key="image"
-              src={image}
+              src={URL.createObjectURL(image)} // Cria uma URL temporária para exibir a imagem
               alt="Foto do perfil"
               className="w-full h-full object-cover rounded-full"
               initial={{ opacity: 0, scale: 0.9 }}

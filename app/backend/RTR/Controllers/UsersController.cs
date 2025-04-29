@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MeuProjetoApi.Data;
 using MeuProjetoApi.Models;
+using System.IO;
 
 namespace MeuProjetoApi.Controllers
 {
@@ -41,55 +42,71 @@ namespace MeuProjetoApi.Controllers
         }
 
         // POST: api/Users
-    // POST: api/Users
-// POST: api/Users
-[HttpPost]
-public async Task<ActionResult<User>> PostUser(User user)
-{
-    // Se NÃO tiver nenhum usuário, chave e ranking começam em 0 e 1
-    int nextChave = 0;
-
-    bool existeUsuario = await _context.Users.AnyAsync();
-    if (existeUsuario)
-    {
-        // Descobre a chave máxima atualmente usada
-        int maxChave = await _context.Users.MaxAsync(u => u.Chave);
-
-        // Conta quantos jogadores têm essa chave máxima
-        int quantidadeComMaxChave = await _context.Users.CountAsync(u => u.Chave == maxChave);
-
-        // Decide se incrementa ou mantém a chave
-        if (quantidadeComMaxChave >= 3)
-            nextChave = maxChave + 3;
-        else
-            nextChave = maxChave;
-    }
-
-    user.Chave = nextChave;
-
-    // Ranking: total atual de usuários + 1
-    int userCount = await _context.Users.CountAsync();
-    user.Ranking = userCount + 1;
-
-    _context.Users.Add(user);
-    try
-    {
-        await _context.SaveChangesAsync();
-    }
-    catch (DbUpdateException)
-    {
-        if (UserExists(user.ID))
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser([FromForm] UserWithImage userWithImage)
         {
-            return Conflict();
-        }
-        else
-        {
-            throw;
-        }
-    }
+            // Se NÃO tiver nenhum usuário, chave e ranking começam em 0 e 1
+            int nextChave = 0;
 
-    return CreatedAtAction("GetUser", new { id = user.ID }, user);
-}
+            bool existeUsuario = await _context.Users.AnyAsync();
+            if (existeUsuario)
+            {
+                // Descobre a chave máxima atualmente usada
+                int maxChave = await _context.Users.MaxAsync(u => u.Chave);
+
+                // Conta quantos jogadores têm essa chave máxima
+                int quantidadeComMaxChave = await _context.Users.CountAsync(u => u.Chave == maxChave);
+
+                // Decide se incrementa ou mantém a chave
+                if (quantidadeComMaxChave >= 3)
+                    nextChave = maxChave + 3;
+                else
+                    nextChave = maxChave;
+            }
+
+            // Converte a imagem para Base64, se fornecida
+            string? imageBase64 = null;
+            if (userWithImage.Image != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await userWithImage.Image.CopyToAsync(memoryStream);
+                    var imageBytes = memoryStream.ToArray();
+                    imageBase64 = Convert.ToBase64String(imageBytes);
+                }
+            }
+
+            // Cria o objeto User com os dados recebidos
+            var user = new User
+            {
+                Name = userWithImage.Name,
+                Email = userWithImage.Email,
+                Password = userWithImage.Password,
+                ImageBase64 = imageBase64, // Armazena a imagem como Base64
+                Chave = nextChave,
+                Ranking = await _context.Users.CountAsync() + 1 // Ranking: total atual de usuários + 1
+            };
+
+            _context.Users.Add(user);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (UserExists(user.ID))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+        }
+
         // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
