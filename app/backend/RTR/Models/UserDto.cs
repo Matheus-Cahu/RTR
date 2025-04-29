@@ -8,7 +8,7 @@ namespace MeuProjetoApi.Models
         public int Ranking { get; set; }
         public int Vitorias { get; set; }
         public int Chave { get; set; }
-        public string? ImgBase64 { get; set; } // Representação da imagem em Base64
+        public string? ImgBase64 { get; set; }
 
         // Construtor para facilitar a conversão de User para UserDto
         public UserDto(User user)
@@ -19,7 +19,7 @@ namespace MeuProjetoApi.Models
             Ranking = user.Ranking;
             Vitorias = user.Vitorias;
             Chave = user.Chave;
-            ImgBase64 = user.Img != null ? Convert.ToBase64String(user.Img) : null;
+            ImgBase64 = user.Img != null ? $"data:image/png;base64,{Convert.ToBase64String(user.Img)}" : null;
         }
     }
 }

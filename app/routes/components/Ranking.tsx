@@ -22,18 +22,20 @@ export default function Ranking({ userList }: RankingProps) {
                 className="bg-verde1 shadow-lg gap-8 flex flex-row justify-between rounded-lg p-4 text-white w-[100%] items-center"
               >
                 <h2 className="text-2xl font-montserrat mb-2">{user.ranking}</h2>
-                <h2 className="text-2xl font-montserrat mb-2">{user.name}</h2>
                 {user.imgBase64 ? (
                   <img
-                    src={user.imgBase64}
-                    alt={`Imagem de ${user.name}`}
-                    className="w-12 h-12 rounded-full object-cover"
+                  src={user.imgBase64}
+                  alt={`Imagem de ${user.name}`}
+                  className="w-14 h-14 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-                    <span className="text-sm text-gray-600">Sem imagem</span>
-                  </div>
+                  <img
+                  src="/userPlaceholder.jpg"
+                  alt={`Imagem de ${user.name}`}
+                  className="w-14 h-14 rounded-full object-cover"
+                  />
                 )}
+                <h2 className="text-2xl font-montserrat mb-2">{user.name}</h2>
                 <h2 className="text-2xl font-montserrat mb-2">{chaves[user.chave]}</h2>
               </div>
             ))}
