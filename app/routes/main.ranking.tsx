@@ -4,23 +4,16 @@ import { json, LoaderFunction } from "@remix-run/node"; // Apenas no loader
 import { useLoaderData } from "@remix-run/react"; // Para o lado do cliente
 
 export const loader: LoaderFunction = async () => {
-    const response = await fetch("http://localhost:5042/api/Users", {
-        method: "GET",
-        headers: {
-            "Accept": "application/json", // Indica que espera JSON como resposta
-        },
-    });
-
-    if (!response.ok) {
-        throw new Response("Erro ao buscar os dados", { status: response.status });
-    }
-
-    const data = await response.json();
-    return json(data); // Retorna os dados como JSON
+  const response = await fetch("http://localhost:5042/api/Users");
+  if (!response.ok) {
+    throw new Response("Erro ao buscar os dados da API", { status: 500 });
+  }
+  const data = await response.json();
+  return json(data);
 };
 
 export default function ranking(){
-    const userList = useLoaderData(); // Obtém os dados do loader
+  const userList = useLoaderData();
     console.log(userList);
     return(
         <div>

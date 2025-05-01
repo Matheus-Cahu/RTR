@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react";
 import React from "react";
 
 export default function Splash() {
@@ -18,10 +19,11 @@ export default function Splash() {
       </div>
 
       {/* Botão de Entrar */}
+      <Link to="/login" className="w-full flex justify-center">
       <button className="w-3/4 max-w-xs bg-green-600 text-white text-lg font-bold py-3 rounded-md hover:bg-green-700 transition">
         ENTRAR
       </button>
-
+      </Link>
       {/* Link para criar conta */}
       <p className="mt-6 text-white text-sm">
         Não é cadastrado?{" "}
