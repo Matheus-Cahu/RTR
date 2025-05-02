@@ -19,7 +19,7 @@ export default function Splash() {
       </div>
 
       {/* Botão de Entrar */}
-      <Link to="/login" className="w-full flex justify-center">
+      <Link to="/login/email" className="w-full flex justify-center">
       <button className="w-3/4 max-w-xs bg-green-600 text-white text-lg font-bold py-3 rounded-md hover:bg-green-700 transition">
         ENTRAR
       </button>
