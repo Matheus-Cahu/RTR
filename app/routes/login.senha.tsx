@@ -31,43 +31,52 @@ export const action = async ({ request }) => {
   const form = await request.formData();
   const email = form.get("email");
   const password = form.get("password");
+  console.log(password);
+
+  console.log("[ACTION DEBUG]", "email recebido:", email, "password recebido (****):", !!password);
 
   const apiUrl = "http://localhost:5042/api/Users/login";
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+  let response, responseBodyRaw, responseBody;
 
-  if (response.status === 401) {
-    const { message } = await response.json();
-    return json({ error: message || "Credenciais inválidas." }, { status: 401 });
+  try {
+    response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    responseBodyRaw = await response.text();
+    try {
+      responseBody = JSON.parse(responseBodyRaw);
+    } catch {
+      responseBody = responseBodyRaw;
+    }
+
+    console.log("[ACTION DEBUG]", "Status:", response.status, "Body:", responseBody);
+
+    if (response.status === 401) {
+      const message = responseBody?.message ?? responseBody?.error ?? "Credenciais inválidas.";
+      return json({ error: message }, { status: 401 });
+    }
+    if (!response.ok) {
+      return json({ error: responseBody ?? "Erro no servidor." }, { status: 500 });
+    }
+
+    const user = typeof responseBody === "string" ? JSON.parse(responseBody) : responseBody;
+    // Session... (resto igual)
+  } catch (err) {
+    console.error("[ACTION DEBUG] Erro no fetch:", err);
+    return json({ error: "Erro ao comunicar com o servidor: " + err }, { status: 500 });
   }
-  if (!response.ok) return json({ error: "Erro no servidor." }, { status: 500 });
-
-  const user = await response.json();
-
-  // LOGIN OK: cria a sessão normalmente
-  const session = await getSession(request.headers.get("Cookie"));
-  session.set("userId", user.id);
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
 };
 
 // Componente React - Formulário tipo Remix
 export default function LoginSenha() {
-  const { email, password, setPassword } = useUserLogin();
+  const {email, password, setPassword } = useUserLogin();
   const actionData = useActionData();
-
-  const handleChangePassword = (event) => {
-    setPassword(event.target.value);
-  };
 
   return (
     <div className="flex flex-col items-center gap-4 justify-center h-screen bg-cover bg-center bg-white">
@@ -79,8 +88,8 @@ export default function LoginSenha() {
           placeholder="Digite sua senha"
           name="password"
           type="password"
-          value={password || ""}
-          onChange={handleChangePassword}
+          value={password}
+          onChange={event => setPassword(event.target.value)}
         />
         <button
           type="submit"
@@ -88,9 +97,13 @@ export default function LoginSenha() {
         >
           Entrar
         </button>
-        {actionData?.error &&
-          <div className="text-red-500 font-semibold">{actionData.error}</div>
-        }
+        {actionData?.error && (
+  <div className="text-red-500 font-semibold">
+    {typeof actionData.error === 'string'
+      ? actionData.error
+      : JSON.stringify(actionData.error)}
+  </div>
+)}
       </Form>
     </div>
   );

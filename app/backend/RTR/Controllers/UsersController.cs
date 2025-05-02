@@ -12,6 +12,9 @@ namespace MeuProjetoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+
+
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -133,27 +136,61 @@ public async Task<ActionResult<User>> PostUser([FromForm] UserWithImage userWith
 }
 
             [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+public async Task<IActionResult> Login([FromBody] LoginDto LoginDto)
+{
+    try
     {
-        Console.WriteLine($"[LOGIN] Email recebido: {loginDto?.Email}");
-        Console.WriteLine($"[LOGIN] Password recebido: {loginDto?.Password}");
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-        if (user == null) return Unauthorized("Usuário não encontrado.");
+        if (LoginDto == null)
+        {
+            Console.WriteLine("[ERRO LOGIN] Body nulo ou inválido");
+            return BadRequest("Body da requisição ausente ou inválido.");
+        }
 
-        // Aqui, use o Bcrypt do .NET para comparar:
-        bool isValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+        if (string.IsNullOrWhiteSpace(LoginDto.Email) || string.IsNullOrWhiteSpace(LoginDto.Password))
+        {
+            Console.WriteLine("[ERRO LOGIN] Email ou senha vazios");
+            return BadRequest("Email e senha são obrigatórios.");
+        }
 
-        if (!isValid) return Unauthorized("Senha inválida.");
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == LoginDto.Email);
+        if (user == null)
+        {
+            Console.WriteLine($"[ERRO LOGIN] Usuário não encontrado: {LoginDto.Email}");
+            return Unauthorized("Usuário não encontrado.");
+        }
 
-        // Login OK, retorne dados públicos do usuário (sem a senha/hash!)
+        if (string.IsNullOrEmpty(user.Password))
+        {
+            Console.WriteLine($"[ERRO LOGIN] Usuário com senha nula: {user.Email}");
+            return StatusCode(500, "Senha do usuário está ausente no banco.");
+        }
+
+        bool isValid;
+        try
+        {
+            isValid = BCrypt.Net.BCrypt.Verify(LoginDto.Password, user.Password);
+        }
+        catch (Exception exBcrypt)
+        {
+            Console.WriteLine($"[ERRO LOGIN] Exceção no BCrypt: {exBcrypt}");
+            return StatusCode(500, "Falha ao validar a senha (hash inválido?).");
+        }
+
+        if (!isValid)
+        {
+            Console.WriteLine($"[ERRO LOGIN] Senha inválida para usuário: {user.Email}");
+            return Unauthorized("Senha inválida.");
+        }
+
+        Console.WriteLine($"[LOGIN OK] Usuário autenticado: {user.Email}");
         return Ok(new { id = user.ID, email = user.Email, name = user.Name });
     }
-
-    public class LoginDto
+    catch (Exception ex)
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        Console.WriteLine($"[ERRO LOGIN GERAL] {ex}");
+        return StatusCode(500, "Erro interno: " + ex.Message);
     }
+}
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
