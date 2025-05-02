@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MeuProjetoApi.Data;
 using MeuProjetoApi.Models;
 using System.IO;
+using BCrypt.Net;
 
 namespace MeuProjetoApi.Controllers
 {
@@ -32,6 +33,22 @@ namespace MeuProjetoApi.Controllers
             return Ok(userDtos);
         }
 
+        // GET: api/Users/by-email?email=xyz@abc.com
+        [HttpGet("by-email")]
+        public async Task<ActionResult<UserDto>> GetUserByEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest("Email não fornecido.");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                return NotFound();
+
+            var userDto = new UserDto(user);
+            return Ok(userDto);
+        }
+
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(int id)
@@ -49,70 +66,94 @@ namespace MeuProjetoApi.Controllers
             return Ok(userDto);
         }
 
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser([FromForm] UserWithImage userWithImage)
+[HttpPost]
+public async Task<ActionResult<User>> PostUser([FromForm] UserWithImage userWithImage)
+{
+    // Valide os dados recebidos
+    if (string.IsNullOrWhiteSpace(userWithImage.Password))
+        return BadRequest("Senha é obrigatória.");
+
+    if (string.IsNullOrWhiteSpace(userWithImage.Name) || string.IsNullOrWhiteSpace(userWithImage.Email))
+        return BadRequest("Nome e email são obrigatórios.");
+
+    int nextChave = 0;
+
+    // Calcular a chave, como você já fazia
+    bool existeUsuario = await _context.Users.AnyAsync();
+    if (existeUsuario)
+    {
+        int maxChave = await _context.Users.MaxAsync(u => u.Chave);
+        int quantidadeComMaxChave = await _context.Users.CountAsync(u => u.Chave == maxChave);
+
+        if (quantidadeComMaxChave >= 3)
+            nextChave = maxChave + 3;
+        else
+            nextChave = maxChave;
+    }
+
+    // Processar a imagem, se enviada
+    byte[]? imageBlob = null;
+    if (userWithImage.Image != null)
+    {
+        using (var memoryStream = new MemoryStream())
         {
-            // Se NÃO tiver nenhum usuário, chave e ranking começam em 0 e 1
-            int nextChave = 0;
-
-            bool existeUsuario = await _context.Users.AnyAsync();
-            if (existeUsuario)
-            {
-                // Descobre a chave máxima atualmente usada
-                int maxChave = await _context.Users.MaxAsync(u => u.Chave);
-
-                // Conta quantos jogadores têm essa chave máxima
-                int quantidadeComMaxChave = await _context.Users.CountAsync(u => u.Chave == maxChave);
-
-                // Decide se incrementa ou mantém a chave
-                if (quantidadeComMaxChave >= 3)
-                    nextChave = maxChave + 3;
-                else
-                    nextChave = maxChave;
-            }
-
-            // Converte a imagem para BLOB, se fornecida
-            byte[]? imageBlob = null;
-            if (userWithImage.Image != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await userWithImage.Image.CopyToAsync(memoryStream);
-                    imageBlob = memoryStream.ToArray(); // Converte a imagem para um array de bytes
-                }
-            }
-
-            // Cria o objeto User com os dados recebidos
-            var user = new User
-            {
-                Name = userWithImage.Name,
-                Email = userWithImage.Email,
-                Password = userWithImage.Password,
-                Img = imageBlob, // Armazena a imagem como BLOB
-                Chave = nextChave,
-                Ranking = await _context.Users.CountAsync() + 1 // Ranking: total atual de usuários + 1
-            };
-
-            _context.Users.Add(user);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.ID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+            await userWithImage.Image.CopyToAsync(memoryStream);
+            imageBlob = memoryStream.ToArray();
         }
+    }
+
+    // Gere o hash da senha (corrigido)
+    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userWithImage.Password);
+
+    var user = new User
+    {
+        Name = userWithImage.Name,
+        Email = userWithImage.Email,
+        Password = hashedPassword, // Salvar o hash corretamente
+        Img = imageBlob,
+        Chave = nextChave,
+        Ranking = await _context.Users.CountAsync() + 1
+    };
+
+    _context.Users.Add(user);
+
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+        if (UserExists(user.ID))
+            return Conflict();
+        else
+            throw;
+    }
+
+    return CreatedAtAction("GetUser", new { id = user.ID }, user);
+}
+
+            [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        Console.WriteLine($"[LOGIN] Email recebido: {loginDto?.Email}");
+        Console.WriteLine($"[LOGIN] Password recebido: {loginDto?.Password}");
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+        if (user == null) return Unauthorized("Usuário não encontrado.");
+
+        // Aqui, use o Bcrypt do .NET para comparar:
+        bool isValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+
+        if (!isValid) return Unauthorized("Senha inválida.");
+
+        // Login OK, retorne dados públicos do usuário (sem a senha/hash!)
+        return Ok(new { id = user.ID, email = user.Email, name = user.Name });
+    }
+
+    public class LoginDto
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]

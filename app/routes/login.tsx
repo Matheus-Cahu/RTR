@@ -1,8 +1,10 @@
 import { Outlet, Link } from "@remix-run/react";
-import { X } from "lucide-react";
+import { User, X } from "lucide-react";
+import { UserLoginProvider } from "~/data/context/ContextUserLogin";
 
 export default function Login() {
   return (
+    <UserLoginProvider>
     <div className="flex flex-col items-center justify-center h-screen bg-white">
       <div className="mb-12">
         <Link to="/splash">
@@ -16,5 +18,6 @@ export default function Login() {
       </div>
       <Outlet />
     </div>
+    </UserLoginProvider>
   );
 }

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Z3io2LS4CSw=",
+  "dgSpecHash": "Kra922IPc14=",
   "success": true,
   "projectFilePath": "/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/RTR.csproj",
   "expectedPackageFiles": [
+    "/home/matheus-cahu/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/home/matheus-cahu/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/matheus-cahu/.nuget/packages/microsoft.aspnetcore.openapi/8.0.15/microsoft.aspnetcore.openapi.8.0.15.nupkg.sha512",
     "/home/matheus-cahu/.nuget/packages/microsoft.bcl.asyncinterfaces/7.0.0/microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",

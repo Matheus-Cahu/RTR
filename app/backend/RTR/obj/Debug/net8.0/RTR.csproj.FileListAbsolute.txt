@@ -269,3 +269,4 @@
 /home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/obj/Debug/net8.0/RTR.pdb
 /home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/obj/Debug/net8.0/RTR.genruntimeconfig.cache
 /home/matheus-cahu/Área de trabalho/Rtr/app/backend/RTR/obj/Debug/net8.0/ref/RTR.dll
+/home/matheus-cahu/Área de trabalho/RTR/app/backend/RTR/bin/Debug/net8.0/BCrypt.Net-Next.dll
