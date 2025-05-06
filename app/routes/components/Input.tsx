@@ -1,5 +1,6 @@
 interface InputProps {
   label: string;
+  name: string;
   placeholder: string;
   type: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -10,6 +11,7 @@ export default function Input(props: InputProps){
       <div className="relative w-full">
       <label className="absolute -top-2 left-2 bg-white px-1 text-sm text-slate-600">{props.label}</label>
       <input
+      name={props.name}
         onChange={props.onChange}
         type={props.type}
         placeholder={props.placeholder}
