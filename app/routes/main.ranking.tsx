@@ -1,9 +1,10 @@
 // app/routes/ranking.jsx (ou .tsx, se usar TypeScript)
 import { Info } from "lucide-react";
 import Ranking from "./components/Ranking";
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { sessionStorage, getSession } from "../session.server"; // ajuste o caminho se necessário
+import { getSession } from "../session.server"; // ajuste o caminho se necessário
+
 
 export const loader = async ({ request }) => {
   const session = await getSession(request);
