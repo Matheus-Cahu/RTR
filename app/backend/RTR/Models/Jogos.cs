@@ -16,7 +16,6 @@ namespace MeuProjetoApi.Models
             Jog2_G2 = 0;
             Vencedor = string.Empty;
             Data = DateTime.UtcNow;
-            Horario = TimeSpan.Zero;
             Status = string.Empty;
             Local = string.Empty;
         }
@@ -37,7 +36,6 @@ namespace MeuProjetoApi.Models
         public string? Vencedor { get; set; } // Pode ser nulo (caso o vencedor ainda não tenha sido definido)
 
         public DateTime Data { get; set; } // Data do jogo
-        public TimeSpan Horario { get; set; } // Horário do jogo
 
         public string Status { get; set; } // Status do jogo (ex.: "Encerrado" ou "Pendente")
         public string Local { get; set; } // Local do jogo
