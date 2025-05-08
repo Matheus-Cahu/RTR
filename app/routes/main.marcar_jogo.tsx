@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useLoaderData, json } from "@remix-run/react";
 import { getSession } from "../session.server";
 import Input from "./components/Input";
+import { useNavigate } from "@remix-run/react";
 
 // Loader permanece igual
+
 export const loader = async ({ request }) => {
   const session = await getSession(request);
   const currentUser = session.get("currentUser");
@@ -39,18 +41,18 @@ export default function MarcarJogo() {
       const fullData = `${data}${horarioDefault}`;
   
       const body = {
-        jogador1: currentUser.id.toString(), // ID do jogador atual
-        jogador2: selectedUserId, // ID do adversário selecionado
-        local: local, // Local do jogo
-        data: fullData, // Data no formato ISO (exemplo: 2024-07-04T14:00:00Z)
-        status: "Pendente", // Status inicial do jogo
+        Jogador1: currentUser.id.toString(), // ID do jogador atual
+        Jogador2: selectedUserId, // ID do adversário selecionado
+        Local: local, // Local do jogo
+        Data: fullData, // Data no formato ISO (exemplo: 2024-07-04T14:00:00Z)
+        Status: "Solicitado", // Status inicial do jogo
   
         // Campos com valores padrão
-        imagem: null, // Pode ser enviado como null se o backend suportar
-        jog1_G1: 0,
-        jog1_G2: 0,
-        jog2_G1: 0,
-        jog2_G2: 0,
+        Img: null, // Pode ser enviado como null se o backend suportar
+        Jog1_G1: 0,
+        Jog1_G2: 0,
+        Jog2_G1: 0,
+        Jog2_G2: 0,
         vencedor: "", // Inicializa como string vazia
       };
   
@@ -77,10 +79,11 @@ export default function MarcarJogo() {
       console.error("Erro ao cadastrar jogo:", error);
     }
   };
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="h1 mb-4">Marcar Jogo</h1>
-      <form className="flex flex-col gap-4" onSubmit={handleMarcar}>
+      <form className="flex flex-col gap-4" onSubmit={handleMarcar} >
         <select
           value={selectedUserId}
           onChange={(e) => setSelectedUserId(e.target.value)}

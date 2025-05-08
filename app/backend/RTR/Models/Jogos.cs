@@ -9,7 +9,7 @@ namespace MeuProjetoApi.Models
             Id = 0;
             Jogador1 = string.Empty;
             Jogador2 = string.Empty;
-            Imagem = string.Empty;
+            Img = null;
             Jog1_G1 = 0;
             Jog1_G2 = 0;
             Jog2_G1 = 0;
@@ -25,7 +25,7 @@ namespace MeuProjetoApi.Models
         public string Jogador1 { get; set; } // Não pode ser nulo
         public string Jogador2 { get; set; } // Não pode ser nulo
 
-        public string? Imagem { get; set; } // Pode ser nulo
+        public byte[]? Img { get; set; } // Pode ser nulo
 
         // Pontuações
         public int Jog1_G1 { get; set; } // Pontuação do jogador 1 no 1º set
