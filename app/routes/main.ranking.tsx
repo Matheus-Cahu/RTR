@@ -10,11 +10,7 @@ export const loader = async ({ request }) => {
   const session = await getSession(request);
   const currentUser = session.get("currentUser");
   const token = session.get("token");
-/*
-  if (!token || !currentUser) {
-    return redirect("/login/email");
-  }
-    */
+
   // Busca lista de usuários da API (se exigir autenticação, envie o token)
   const response = await fetch("http://localhost:5042/api/Users", {
     headers: { Authorization: `Bearer ${token}` }
