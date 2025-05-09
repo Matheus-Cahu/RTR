@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import Input from "./components/Input";
 import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
-import Shop from "./components/Shop";
+import Shop from "./components/ShopCard";
 import Select from "./components/Select";
 import Noti from "./components/Noti";
 
@@ -54,7 +54,6 @@ export default function components() {
         <Input label="Template" placeholder="Template"></Input>
         <Footer></Footer>
        
-       <Shop></Shop>
 4fc2344573181c0c394baa0bef96c6a749efa5
        <Select label="Dropdown" options={userList.map(user => user.name)}></Select>
        <Noti></Noti>
