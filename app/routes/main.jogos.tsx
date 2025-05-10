@@ -80,7 +80,6 @@ export const action = async ({ request }) => {
       return json({ success: false, error: err.message });
     }
   }
-  if (actionType === "lancar")
   return json({ success: false, error: "Ação desconhecida" });
 };
 
@@ -88,9 +87,7 @@ export const action = async ({ request }) => {
 export default function Jogos() {
   const fetcher = useFetcher();
   const { userList, jogosList, currentUser } = useLoaderData();
-  console.log(userList);
-  const user1 = userList.find((j) => j.id == 52);
-  console.log(user1);
+
   function handleAceitar(jogoId) {
     fetcher.submit({ jogoId, actionType: "aceitar" }, { method: "post" });
   }
@@ -99,11 +96,8 @@ export default function Jogos() {
     fetcher.submit({ jogoId, actionType: "negar" }, { method: "post" });
   }
 
-  // **Garanta que o campo é ID (ou id) e Img (ou img) conforme o backend!**
-  // Exemplo: user.ID, user.Img
-
-  // Exemplo de verificação rápida dos campos:
-  // console.log(userList[0], jogosList[0]);
+  // Função para buscar usuário por ID
+  const getUserById = (id) => userList.find((user) => user.id == id || user.ID == id);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 mb-6 p-6">
@@ -117,7 +111,7 @@ export default function Jogos() {
         .map((jogo) => (
           <SolicitacaoJogo
             key={jogo.id}
-            jogador={userList.find((user) => user.ID == jogo.jogador1)?.name}
+            jogador={getUserById(jogo.jogador1)?.name ?? "Jogador 1"}
             data={jogo.data}
             local={jogo.local}
             onAceitar={() => handleAceitar(jogo.id)}
@@ -130,16 +124,16 @@ export default function Jogos() {
         {jogosList
           .filter((jogo) => jogo.status === "Agendado" || jogo.status === "Resultado")
           .map((jogo, index) => {
-            console.log(jogo.jogador1, jogo.jogador2)
-            const jogador1User = userList.find((j) => j.id == jogo.jogador1);
-            const jogador2User = userList.find((j) => j.id == jogo.jogador2);
+            const jogador1User = getUserById(jogo.jogador1);
+            const jogador2User = getUserById(jogo.jogador2);
+
             return (
               <Card
                 key={jogo.id ?? index}
-                jogador_1={jogador1User.name}
-                jogador_2={jogador2User.name}
-                imagem_J1={jogador1User.imgBase64}
-                imagem_J2={jogador2User.imgBase64}
+                jogador_1={jogador1User?.name ?? jogo.jogador1}
+                jogador_2={jogador2User?.name ?? jogo.jogador2}
+                imagem_J1={jogador1User?.imgBase64}
+                imagem_J2={jogador2User?.imgBase64}
                 data={jogo.data}
                 local={jogo.local}
                 status={jogo.status}
@@ -151,11 +145,27 @@ export default function Jogos() {
 
       <h1 className="text-3xl font-bold text-gray-800 mt-6 mb-6">Jogos Finalizados</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-      {jogosList
-  .filter((jogo) => jogo.status === "Finalizado")
-  .map((jogo, index) => (
-    <CardFinalizados key={jogo.id ?? index} jogo={jogo} />
-  ))}
+        {jogosList
+          .filter((jogo) => jogo.status === "Finalizado")
+          .map((jogo, index) => {
+            console.log(jogo);
+            const jogador1User = getUserById(jogo.jogador1);
+            const jogador2User = getUserById(jogo.jogador2);
+            return (
+              <CardFinalizados
+                key={jogo.id ?? index}
+                jogador_1={jogador1User?.name ?? jogo.jogador1}
+                jogador_2={jogador2User?.name ?? jogo.jogador2}
+                imagem={jogo.img}
+                jog1_g_1={jogo.jog1_G1}
+                jog1_g_2={jogo.jog1_G2}
+                jog2_g_1={jogo.jog2_G1}
+                jog2_g_2={jogo.jog2_G2}
+                data={jogo.data}
+                local={jogo.local}
+              />
+            );
+          })}
       </div>
     </div>
   );

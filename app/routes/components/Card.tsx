@@ -29,7 +29,7 @@ export default function Card({
 }: CardProps) {
   const [expandido, setExpandido] = useState(false);
   const [inputs, setInputs] = useState([0, 0, 0, 0]);
-
+  const [imgFile, setImgFile] = useState<File | null>(null);
   // Determinar se o usuário pode lançar resultado
   const ehJogador =
     String(currentUserId) === String(id_jogador_1) ||
@@ -43,39 +43,60 @@ export default function Card({
   };
 
   const handleLancarResultado = async () => {
-    try {
-      // Payload com dados do placar e novo status
-      const payload = {
-        Jog1_G1: inputs[0],
-        Jog1_G2: inputs[1],
-        Jog2_G1: inputs[2],
-        Jog2_G2: inputs[3],
-        Status: "Resultado", // Atualiza status
-      };
+  try {
+    let imgBase64: string | null = null;
 
-      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`, // Token armazenado
-        },
-        body: JSON.stringify(payload),
+    if (imgFile) {
+      // Lê a imagem como base64
+      imgBase64 = await new Promise<string | null>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Remove o prefixo "data:image/jpeg;base64," se quiser só o conteúdo
+          const result = reader.result as string;
+          const base64 = result.split(',')[1] || result; // safe para ambos os casos
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(imgFile);
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Erro ao lançar resultado:", errorText);
-        alert("Erro ao salvar o resultado no servidor.");
-        return;
-      }
-
-      alert("Resultado lançado com sucesso!");
-      setExpandido(false);
-    } catch (err) {
-      console.error("Erro na integração:", err);
-      alert("Erro ao tentar lançar o resultado.");
     }
-  };
+
+    // Payload com dados do placar, imagem e novo status
+    const payload: any = {
+      Jog1_G1: inputs[0],
+      Jog1_G2: inputs[1],
+      Jog2_G1: inputs[2],
+      Jog2_G2: inputs[3],
+      Status: "Resultado",
+    };
+
+    if (imgBase64) {
+      payload.Img = imgBase64; // Nome exato do seu campo no backend
+    }
+
+    const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Erro ao lançar resultado:", errorText);
+      alert("Erro ao salvar o resultado no servidor.");
+      return;
+    }
+
+    alert("Resultado lançado com sucesso!");
+    setExpandido(false);
+  } catch (err) {
+    console.error("Erro na integração:", err);
+    alert("Erro ao tentar lançar o resultado.");
+  }
+};
 
   return (
     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-4">
@@ -160,7 +181,18 @@ export default function Card({
                   onChange={e => handleChange(3, e.target.value)}
                   className="w-12 text-center border border-gray-300 rounded h-9"
                 />
-              </div>
+                </div>
+                <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  if (e.target.files && e.target.files[0]) {
+                    setImgFile(e.target.files[0]);
+                  } else {
+                    setImgFile(null);
+                  }
+                }}
+              />
               <button
                 onClick={handleLancarResultado}
                 className="mt-2 px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"

@@ -1,65 +1,44 @@
-interface Jogo {
+interface CardFinalizadosProps {
   jogador_1: string;      // nome do jogador 1
   jogador_2: string;      // nome do jogador 2
-  imagem_J1: string;      // foto do jogador 1 (base64 ou url)
-  imagem_J2: string;      // foto do jogador 2
-  imagem: string;         // imagem geral do jogo (não será usada)
+  imagem: string | null;  // imagem em base64? (verifique este campo no backend!)
   jog1_g_1: number;       // pontos jogador 1, set 1
   jog1_g_2: number;       // pontos jogador 1, set 2
   jog2_g_1: number;       // pontos jogador 2, set 1
   jog2_g_2: number;       // pontos jogador 2, set 2
-  vencedor: string;
   data: string;
-  horario: string;
-  status: "Agendado" | "Finalizado" | "Solicitado";
   local: string;
 }
 
-interface CardFinalizadosProps {
-  jogo: Jogo;
-}
-
-export default function CardFinalizados({ jogo }: CardFinalizadosProps) {
-  const placar1 = jogo.jog1_g_1 + jogo.jog1_g_2;
-  const placar2 = jogo.jog2_g_1 + jogo.jog2_g_2;
+export default function CardFinalizados({
+  jogador_1, jogador_2, imagem, jog1_g_1, jog1_g_2, jog2_g_1, jog2_g_2, data, local,
+}: CardFinalizadosProps) {
+  // Se imagem vier binária/base64, adaptar aqui:
+const imgSrc = imagem ? `data:image/jpeg;base64,${imagem}` : undefined;
+  // Se não for imagem, pode omitir o tag <img/>
 
   return (
     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-4">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-800">Finalizado</h2>
+                {imgSrc && (
+              <img
+          src={imgSrc}
+          alt={`Imagem do jogo entre ${jogador_1} e ${jogador_2}`}
+          className="w-full h-56 object-cover rounded"
+        />
+              )}
+      <div className="flex items-center justify-between">
+        <h1 className="h2-center">{jogador_1}</h1>
+        <span className="h2-center">vs</span>
+        <h1 className="h2-center">{jogador_2}</h1>
       </div>
-      <div className="flex justify-center items-start space-x-6">
-        <div className="flex flex-col items-center">
-          <img
-            src={jogo.imagem_J1 || "/userPlaceholder.jpg"}
-            alt={jogo.jogador_1}
-            className="w-24 h-24 object-cover rounded-full shadow-lg"
-          />
-          <span className="h3-center text-center">{jogo.jogador_1}</span>
-          <span className="text-lg font-bold text-black mt-1">{placar1}</span>
-        </div>
-
-        <div className="text-3xl font-bold text-black self-center">X</div>
-
-        <div className="flex flex-col items-center">
-          <img
-            src={jogo.imagem_J2 || "/userPlaceholder.jpg"}
-            alt={jogo.jogador_2}
-            className="w-24 h-24 object-cover rounded-full shadow-lg"
-          />
-          <span className="h3-center text-center">{jogo.jogador_2}</span>
-          <span className="text-lg font-bold text-black mt-1">{placar2}</span>
-        </div>
-      </div>
-
       <div className="flex items-center justify-around text-slate-600 mb-2">
         <div className="text-center">
           <p className="text-sm font-semibold">Data</p>
-          <p>{jogo.data}</p>
+          <p>{data}</p>
         </div>
         <div className="text-center">
           <p className="text-sm font-semibold">Local</p>
-          <p>{jogo.local}</p>
+          <p>{local}</p>
         </div>
       </div>
 
@@ -69,16 +48,13 @@ export default function CardFinalizados({ jogo }: CardFinalizadosProps) {
           <strong>Sets:</strong>
         </span>
         <span>
-          {jogo.jogador_1}: {jogo.jog1_g_1} - {jogo.jog1_g_2}
+          {jogador_1}: {jog1_g_1} - {jog1_g_2}
         </span>
         <span>
-          {jogo.jogador_2}: {jogo.jog2_g_1} - {jogo.jog2_g_2}
+          {jogador_2}: {jog2_g_1} - {jog2_g_2}
         </span>
       </div>
-
-      <div className="text-center font-semibold text-green-700">
-        Vencedor: {jogo.vencedor}
-      </div>
+      {(jog1_g_1 + jog1_g_2 > jog2_g_1 + jog2_g_2) ? (<h1 className="h2-center">Vencedor: {jogador_1}</h1>):(<h1 className="h2-center">Vencedor: {jogador_2}</h1>)}
     </div>
   );
 }
