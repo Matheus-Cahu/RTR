@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MeuProjetoApi.Data;
 
+// --- INÍCIO CONFIGURAÇÃO DO APP ---
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar CORS
@@ -8,14 +9,16 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()   // Permite requisições de qualquer origem
-              .AllowAnyHeader()   // Permite qualquer cabeçalho (Content-Type, Authorization, etc.)
-              .AllowAnyMethod();  // Permite todos os métodos HTTP (GET, POST, PUT, DELETE, etc.)
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
-// Configurar os serviços básicos
-builder.Services.AddControllers();
+// ---------> INCLUA ESSA LINHA AQUI <---------
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(); // <-- Suporte ao Newtonsoft.Json!
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

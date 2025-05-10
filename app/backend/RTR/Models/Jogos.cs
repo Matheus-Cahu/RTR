@@ -18,6 +18,7 @@ namespace MeuProjetoApi.Models
             Data = DateTime.UtcNow;
             Status = string.Empty;
             Local = string.Empty;
+            Relator = string.Empty;
         }
 
         public int Id { get; set; } // Chave primária
@@ -39,5 +40,6 @@ namespace MeuProjetoApi.Models
 
         public string Status { get; set; } // Status do jogo (ex.: "Encerrado" ou "Pendente")
         public string Local { get; set; } // Local do jogo
+        public string Relator { get; set; }
     }
 }

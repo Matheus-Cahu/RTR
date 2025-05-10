@@ -2,6 +2,8 @@ interface SolicitacaoJogoProps {
     jogador: string;
     data: string;
     local: string;
+    onAceitar: ()=> void;
+    onNegar: ()=> void;
 }
 
 export default function SolicitacaoJogo(SolicitacaoJogoProps: SolicitacaoJogoProps) {
@@ -10,10 +12,10 @@ export default function SolicitacaoJogo(SolicitacaoJogoProps: SolicitacaoJogoPro
             <h1 className="h1 text-azul-escuro">{SolicitacaoJogoProps.jogador} deseja jogar com você no dia {SolicitacaoJogoProps.data} em {SolicitacaoJogoProps.local} </h1>
             <div className="flex flex-row justify-center items-center mt-4">
             <div className="bg-verde1 rounded-full w-10 h-10 flex items-center justify-center mx-auto mt-4">       
-             <button className="btn-verde1">Aceitar</button>
+             <button className="btn-verde1" onClick={SolicitacaoJogoProps.onAceitar}>Aceitar</button>
             </div>
             <div className="bg-vermelho rounded-full w-10 h-10 flex items-center justify-center mx-auto mt-4">       
-            <button className="btn-vermelho">Recusar</button>
+            <button className="btn-vermelho" onClick={SolicitacaoJogoProps.onNegar}>Recusar</button>
             </div>
             </div>   
         </div>

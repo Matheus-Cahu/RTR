@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MeuProjetoApi.Models;
 using Microsoft.EntityFrameworkCore;
 using MeuProjetoApi.Data;
+using Newtonsoft.Json.Linq;
 
 namespace MeuProjetoApi.Controllers
 {
@@ -27,36 +28,65 @@ namespace MeuProjetoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Jogos>> GetJogos(int id)
         {
-            var jogos = await _context.Jogos.FindAsync(id);
+            var jogo = await _context.Jogos.FindAsync(id);
 
-            if (jogos == null)
+            if (jogo == null)
             {
                 return NotFound();
             }
 
-            return jogos;
+            return jogo;
         }
 
         // POST: api/Jogos
         [HttpPost]
         public async Task<ActionResult<Jogos>> PostJogos(Jogos jogos)
         {
+            // Validação básica dos campos obrigatórios
+            if (string.IsNullOrWhiteSpace(jogos.Jogador1)) return BadRequest("Jogador1 é obrigatório.");
+            if (string.IsNullOrWhiteSpace(jogos.Jogador2)) return BadRequest("Jogador2 é obrigatório.");
+            if (string.IsNullOrWhiteSpace(jogos.Status)) return BadRequest("Status é obrigatório.");
+            if (string.IsNullOrWhiteSpace(jogos.Local)) return BadRequest("Local é obrigatório.");
+            if (string.IsNullOrWhiteSpace(jogos.Relator)) return BadRequest("Relator é obrigatório.");
+
             _context.Jogos.Add(jogos);
             await _context.SaveChangesAsync();
 
+            // Aponta para o GET específico do jogo criado
             return CreatedAtAction(nameof(GetJogos), new { id = jogos.Id }, jogos);
         }
 
         // PUT: api/Jogos/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJogos(int id, Jogos jogos)
+        public async Task<IActionResult> PutJogos(int id, [FromBody] JObject jogoJson)
         {
-            if (id != jogos.Id)
+            var dbJogo = await _context.Jogos.FindAsync(id);
+            if (dbJogo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(jogos).State = EntityState.Modified;
+            foreach (var prop in jogoJson.Properties())
+            {
+                // Nunca permite alterar o Id
+                if (string.Equals(prop.Name, "id", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var propertyInfo = dbJogo.GetType().GetProperty(
+                    prop.Name,
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase
+                );
+
+                if (propertyInfo != null && propertyInfo.CanWrite)
+                {
+                    // Avoid setting null to non-nullable properties
+                    if (!IsNullableType(propertyInfo.PropertyType) && prop.Value.Type == JTokenType.Null)
+                        continue;
+
+                    var value = prop.Value.ToObject(propertyInfo.PropertyType);
+                    propertyInfo.SetValue(dbJogo, value);
+                }
+            }
 
             try
             {
@@ -81,13 +111,13 @@ namespace MeuProjetoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJogos(int id)
         {
-            var jogos = await _context.Jogos.FindAsync(id);
-            if (jogos == null)
+            var jogo = await _context.Jogos.FindAsync(id);
+            if (jogo == null)
             {
                 return NotFound();
             }
 
-            _context.Jogos.Remove(jogos);
+            _context.Jogos.Remove(jogo);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -96,6 +126,12 @@ namespace MeuProjetoApi.Controllers
         private bool JogosExists(int id)
         {
             return _context.Jogos.Any(e => e.Id == id);
+        }
+
+        // Helper para checar se um tipo é nullable
+        private bool IsNullableType(Type type)
+        {
+            return !type.IsValueType || (Nullable.GetUnderlyingType(type) != null);
         }
     }
 }

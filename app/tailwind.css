@@ -23,6 +23,10 @@ body {
   @apply text-xl text-center font-montserrat text-black;
 }
 
+.h3-center{
+  @apply text-lg text-center font-montserrat text-black;
+}
+
 .btn-verde1 {
   @apply bg-verde1 text-white font-montserrat font-bold py-2 px-4 rounded-md;
 }
