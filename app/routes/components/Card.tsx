@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 interface CardProps {
   jogador_1: string;
   jogador_2: string;
@@ -11,7 +10,12 @@ interface CardProps {
   id_jogador_2: number | string;
   currentUserId: number | string;
   status: string;
-  jogoId: number | string; // ID do jogo para realizar o update
+  jogoId: number | string;
+  relator?: string | number | null; // ADICIONE este campo para saber quem foi o relator!
+  jog1_G1?: number;
+  jog1_G2?: number;
+  jog2_G1?: number;
+  jog2_G2?: number;
 }
 
 export default function Card({
@@ -26,77 +30,114 @@ export default function Card({
   currentUserId,
   status,
   jogoId,
+  relator,
+  jog1_G1 = 0,
+  jog1_G2 = 0,
+  jog2_G1 = 0,
+  jog2_G2 = 0,
 }: CardProps) {
   const [expandido, setExpandido] = useState(false);
   const [inputs, setInputs] = useState([0, 0, 0, 0]);
   const [imgFile, setImgFile] = useState<File | null>(null);
-  // Determinar se o usuário pode lançar resultado
+
+  // Checagens de jogador e relator
   const ehJogador =
     String(currentUserId) === String(id_jogador_1) ||
     String(currentUserId) === String(id_jogador_2);
+
+  const ehRelator = String(currentUserId) === String(relator);
+
+  // Pode lançar resultado?
   const podeLancarResultado = ehJogador && status === "Agendado";
 
-  const handleChange = (idx: number, value: string) => {
-    const novoArray = [...inputs];
-    novoArray[idx] = Number(value);
-    setInputs(novoArray);
+  // Pode confirmar resultado?
+  const podeConfirmarResultado = ehJogador && !ehRelator && status === "Resultado";
+
+  // Expande automaticamente se condição confirmar for satisfeita
+  useEffect(() => {
+    if (podeConfirmarResultado) {
+      setExpandido(true);
+    }
+  }, [podeConfirmarResultado]);
+
+  // Função confirmadora de resultado
+  const handleConfirmarResultado = async () => {
+    try {
+      const payload = {
+        Status: "Finalizado",
+      };
+      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Erro ao confirmar o resultado: " + errorText);
+        return;
+      }
+      alert("Resultado confirmado e jogo finalizado!");
+      setExpandido(false);
+      // Ideal: atualizar lista de jogos no pai aqui!
+    } catch (error) {
+      alert("Erro ao tentar confirmar o resultado!");
+    }
   };
 
+  // Função de lançamento de resultado (a partir do seu código)
   const handleLancarResultado = async () => {
-  try {
-    let imgBase64: string | null = null;
+    try {
+      let imgBase64: string | null = null;
 
-    if (imgFile) {
-      // Lê a imagem como base64
-      imgBase64 = await new Promise<string | null>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          // Remove o prefixo "data:image/jpeg;base64," se quiser só o conteúdo
-          const result = reader.result as string;
-          const base64 = result.split(',')[1] || result; // safe para ambos os casos
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(imgFile);
+      if (imgFile) {
+        imgBase64 = await new Promise<string | null>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(",")[1] || result;
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(imgFile);
+        });
+      }
+
+      const payload: any = {
+        Jog1_G1: inputs[0],
+        Jog1_G2: inputs[1],
+        Jog2_G1: inputs[2],
+        Jog2_G2: inputs[3],
+        Status: "Resultado",
+        Relator: String(currentUserId),
+      };
+      if (imgBase64) {
+        payload.Img = imgBase64;
+      }
+
+      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Erro ao salvar o resultado no servidor: " + errorText);
+        return;
+      }
+
+      alert("Resultado lançado com sucesso!");
+      setExpandido(false);
+    } catch (err) {
+      alert("Erro ao tentar lançar o resultado.");
     }
-
-    // Payload com dados do placar, imagem e novo status
-    const payload: any = {
-      Jog1_G1: inputs[0],
-      Jog1_G2: inputs[1],
-      Jog2_G1: inputs[2],
-      Jog2_G2: inputs[3],
-      Status: "Resultado",
-    };
-
-    if (imgBase64) {
-      payload.Img = imgBase64; // Nome exato do seu campo no backend
-    }
-
-    const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Erro ao lançar resultado:", errorText);
-      alert("Erro ao salvar o resultado no servidor.");
-      return;
-    }
-
-    alert("Resultado lançado com sucesso!");
-    setExpandido(false);
-  } catch (err) {
-    console.error("Erro na integração:", err);
-    alert("Erro ao tentar lançar o resultado.");
-  }
-};
+  };
 
   return (
     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-4">
@@ -105,20 +146,12 @@ export default function Card({
       </div>
       <div className="flex justify-center items-start space-x-6">
         <div className="flex flex-col items-center">
-          <img
-            src={imagem_J1 || "/userPlaceholder.jpg"}
-            alt={jogador_1}
-            className="w-24 h-24 object-cover rounded-full shadow-lg"
-          />
+          <img src={imagem_J1 || "/userPlaceholder.jpg"} alt={jogador_1} className="w-24 h-24 object-cover rounded-full shadow-lg" />
           <span className="h3-center text-center">{jogador_1}</span>
         </div>
         <div className="text-3xl font-bold text-black self-center">X</div>
         <div className="flex flex-col items-center">
-          <img
-            src={imagem_J2 || "/userPlaceholder.jpg"}
-            alt={jogador_2}
-            className="w-24 h-24 object-cover rounded-full shadow-lg"
-          />
+          <img src={imagem_J2 || "/userPlaceholder.jpg"} alt={jogador_2} className="w-24 h-24 object-cover rounded-full shadow-lg" />
           <span className="h3-center text-center">{jogador_2}</span>
         </div>
       </div>
@@ -132,7 +165,24 @@ export default function Card({
           <p>{local}</p>
         </div>
       </div>
-      {podeLancarResultado && (
+
+      {/** Lógica confirmador */}
+      {podeConfirmarResultado && expandido && (
+        <div className="flex flex-col items-center mt-4 gap-2">
+          <div className="text-black font-semibold mb-2">Resultado lançado:</div>
+          <div className="text-black">{jogador_1}: {jog1_G1} - {jog1_G2}</div>
+          <div className="text-black">{jogador_2}: {jog2_G1} - {jog2_G2}</div>
+          <button
+            onClick={handleConfirmarResultado}
+            className="mt-2 px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+          >
+            Confirmar resultado
+          </button>
+        </div>
+      )}
+
+      {/** Lógica de lançamento de resultado */}
+      {!podeConfirmarResultado && podeLancarResultado && (
         <div className="flex flex-col items-center mt-2">
           {!expandido ? (
             <button
@@ -181,8 +231,8 @@ export default function Card({
                   onChange={e => handleChange(3, e.target.value)}
                   className="w-12 text-center border border-gray-300 rounded h-9"
                 />
-                </div>
-                <input
+              </div>
+              <input
                 type="file"
                 accept="image/*"
                 onChange={e => {

@@ -138,6 +138,13 @@ export default function Jogos() {
                 local={jogo.local}
                 status={jogo.status}
                 jogoId={jogo.id}
+                currentUserId={currentUser.id}
+                id_jogador_1={jogo.jogador1}
+                id_jogador_2={jogo.jogador2}
+                jog1_G1={jogo.jog1_G1}
+                jog1_G2={jogo.jog1_G2}
+                jog2_G1={jogo.jog2_G1}
+                jog2_G2={jogo.jog2_G2}
               />
             );
           })}
