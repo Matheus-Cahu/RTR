@@ -4,35 +4,38 @@ import { json } from "@remix-run/node";
 import { useLoaderData, useFetcher } from "@remix-run/react";
 import { getSession } from "../session.server";
 import SolicitacaoJogo from "./components/solicitacaoJogo";
+import { CalendarX } from "lucide-react";
 
-// LOADER
 export const loader = async ({ request }) => {
   const session = await getSession(request);
   const currentUser = session.get("currentUser");
   const token = session.get("token");
 
-  const [userResponse, jogosResponse] = await Promise.all([
-    fetch("http://localhost:5042/api/Users", {
-      headers: { Authorization: `Bearer ${token}` }
-    }),
-    fetch("http://localhost:5042/api/Jogos", {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-  ]);
+  try {
+    const [userResponse, jogosResponse] = await Promise.all([
+      fetch("http://localhost:5042/api/Users", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch("http://localhost:5042/api/Jogos", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
 
-  if (!userResponse.ok || !jogosResponse.ok) {
-    throw new Response("Erro ao buscar dados da API", { status: 500 });
+    if (!userResponse.ok || !jogosResponse.ok) {
+      return json({ userList: [], jogosList: [], currentUser: null });
+    }
+
+    const [userList, jogosList] = await Promise.all([
+      userResponse.json(),
+      jogosResponse.json(),
+    ]);
+
+    return json({ userList, jogosList, currentUser });
+  } catch (err) {
+    return json({ userList: [], jogosList: [], currentUser: null });
   }
-
-  const [userList, jogosList] = await Promise.all([
-    userResponse.json(),
-    jogosResponse.json(),
-  ]);
-
-  return json({ userList, jogosList, currentUser });
 };
 
-// ACTION (Aceitar ou Negar)
 export const action = async ({ request }) => {
   const session = await getSession(request);
   const token = session.get("token");
@@ -83,10 +86,15 @@ export const action = async ({ request }) => {
   return json({ success: false, error: "Ação desconhecida" });
 };
 
-// COMPONENTE PRINCIPAL
 export default function Jogos() {
   const fetcher = useFetcher();
-  const { userList, jogosList, currentUser } = useLoaderData();
+  // Sempre inicializando variáveis caso a API falhe
+  const data = useLoaderData() || {};
+  const {
+    userList = [],
+    jogosList = [],
+    currentUser = null,
+  } = data;
 
   function handleAceitar(jogoId) {
     fetcher.submit({ jogoId, actionType: "aceitar" }, { method: "post" });
@@ -96,8 +104,26 @@ export default function Jogos() {
     fetcher.submit({ jogoId, actionType: "negar" }, { method: "post" });
   }
 
-  // Função para buscar usuário por ID
-  const getUserById = (id) => userList.find((user) => user.id == id || user.ID == id);
+  const getUserById = (id) =>
+    userList.find((user) => user.id == id || user.ID == id);
+
+  // Uso de filtros já prontos para não duplicar lógica
+  const jogosMarcadosOuResultado = jogosList.filter(
+    (jogo) => jogo.status === "Agendado" || jogo.status === "Resultado"
+  );
+  const jogosFinalizados = jogosList.filter(
+    (jogo) => jogo.status === "Finalizado"
+  );
+
+  // Mensagem de nenhum jogo encontrado
+  function NenhumJogo({ texto }) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full py-12 text-gray-600">
+        <CalendarX size={48} className="mb-3 text-gray-400" />
+        <span className="text-lg font-medium">{texto}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 mb-6 p-6">
@@ -106,6 +132,7 @@ export default function Jogos() {
         .filter(
           (jogo) =>
             jogo.status === "Solicitado" &&
+            currentUser &&
             String(jogo.jogador2) === String(currentUser.id)
         )
         .map((jogo) => (
@@ -119,11 +146,13 @@ export default function Jogos() {
           />
         ))}
 
+      {/* Jogos Marcados */}
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Jogos Marcados</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {jogosList
-          .filter((jogo) => jogo.status === "Agendado" || jogo.status === "Resultado")
-          .map((jogo, index) => {
+      {jogosMarcadosOuResultado.length === 0 ? (
+        <NenhumJogo texto="Nenhum jogo marcado ou aguardando confirmação." />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+          {jogosMarcadosOuResultado.map((jogo, index) => {
             const jogador1User = getUserById(jogo.jogador1);
             const jogador2User = getUserById(jogo.jogador2);
 
@@ -138,9 +167,10 @@ export default function Jogos() {
                 local={jogo.local}
                 status={jogo.status}
                 jogoId={jogo.id}
-                currentUserId={currentUser.id}
+                currentUserId={currentUser?.id}
                 id_jogador_1={jogo.jogador1}
                 id_jogador_2={jogo.jogador2}
+                relator={jogo.relator}
                 jog1_G1={jogo.jog1_G1}
                 jog1_G2={jogo.jog1_G2}
                 jog2_G1={jogo.jog2_G1}
@@ -148,14 +178,16 @@ export default function Jogos() {
               />
             );
           })}
-      </div>
+        </div>
+      )}
 
+      {/* Jogos Finalizados */}
       <h1 className="text-3xl font-bold text-gray-800 mt-6 mb-6">Jogos Finalizados</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {jogosList
-          .filter((jogo) => jogo.status === "Finalizado")
-          .map((jogo, index) => {
-            console.log(jogo);
+      {jogosFinalizados.length === 0 ? (
+        <NenhumJogo texto="Nenhum jogo finalizado no momento." />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+          {jogosFinalizados.map((jogo, index) => {
             const jogador1User = getUserById(jogo.jogador1);
             const jogador2User = getUserById(jogo.jogador2);
             return (
@@ -170,10 +202,12 @@ export default function Jogos() {
                 jog2_g_2={jogo.jog2_G2}
                 data={jogo.data}
                 local={jogo.local}
+                relator={jogo.relator}
               />
             );
           })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
