@@ -6,7 +6,7 @@ import InputPicture from "./components/InputPicture";
 import Rules from "./components/Rules";
 import Shop from "./components/ShopCard";
 import Select from "./components/Select";
-import Noti from "./components/Noti";
+import Noti from "./components/Notificacoes";
 
 import jogos from "~/data/jogos";
 

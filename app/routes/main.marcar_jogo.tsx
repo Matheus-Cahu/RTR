@@ -25,7 +25,10 @@ export const loader = async ({ request }) => {
 
 export default function MarcarJogo() {
   const { userList, currentUser } = useLoaderData();
-
+  console.log(userList)
+  console.log("Current User: ", currentUser);
+  console.log("Current User Chave: ", userList.find(user => user.id === currentUser.id).chave);
+  console.log("Usuários da sua chave: ", userList.filter(user => user.chave === userList.find(user => user.id === currentUser.id).chave));
   // Estados para os campos do formulário
   const [selectedUserId, setSelectedUserId] = useState("");
   const [local, setLocal] = useState("");
@@ -71,10 +74,32 @@ export default function MarcarJogo() {
         console.error("Erro ao cadastrar jogo:", errorDetails);
         throw new Error(errorDetails.message || "Erro ao cadastrar jogo");
       }
-  
       console.log("Jogo marcado com sucesso!");
       // Redirecione após sucesso
-      navigate("/main/jogos");
+
+      const notificationBody = {
+        Dest: { selectedUserId },
+        Titulo: "Novo Jogo",
+        Conteudo: `Você tem um novo jogo marcado com ${currentUser.name} no local ${local} na data ${data} esperando sua aprovação.`,
+        Forall: false,
+        Seen: false
+      }
+      const responseNoti = await fetch("http://localhost:5042/api/Notificacoes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(notificationBody),
+      });
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("Erro ao cadastrar notificação:", errorDetails);
+        throw new Error(errorDetails.message || "Erro ao cadastrar notificação");
+      }
+      console.log("Notificação enviada com sucesso!");
+
+
+      //navigate("/main/jogos");
     } catch (error) {
       console.error("Erro ao cadastrar jogo:", error);
     }
@@ -95,7 +120,7 @@ export default function MarcarJogo() {
           </option>
           {userList
             .filter(
-              (user) => user.chave === 0 && user.id !== currentUser.id
+              (user) =>  user.chave === userList.find(user => user.id === currentUser.id).chave && user.id !== currentUser.id
             )
             .map((user) => (
               <option key={user.id} value={user.id}>

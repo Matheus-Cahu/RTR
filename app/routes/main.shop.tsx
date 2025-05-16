@@ -1,38 +1,39 @@
 import ShopCard from "./components/ShopCard";
+import { useLoaderData } from "@remix-run/react";
+import { loader } from "./main.jogos";
+import { getSession } from "../session.server";
+import { json } from "@remix-run/node";
 
-const produtos = [
-  {
-    id: 1,
-    name: "Camisa Polo",
-    description: "Camisa polo 100% algodão, ideal para o dia a dia.",
-    price: 79.90,
-    imageUrl: "https://via.placeholder.com/300x200?text=Camisa+Polo",
-  },
-  {
-    id: 2,
-    name: "Tênis Esportivo",
-    description: "Confortável e resistente para suas atividades físicas.",
-    price: 199.99,
-    imageUrl: "https://via.placeholder.com/300x200?text=T%C3%AAnis+Esportivo",
-  },
-  {
-    id: 3,
-    name: "Relógio Digital",
-    description: "Com cronômetro, alarme e resistente à água.",
-    price: 149.50,
-    imageUrl: "https://via.placeholder.com/300x200?text=Rel%C3%B3gio+Digital",
-  },
-  // Adicione mais produtos aqui
-];
+export const loader = async ({ request }) => {
+  const session = await getSession(request);
+  const currentUser = session.get("currentUser");
+  const token = session.get("token");
+
+  // Busca lista de usuários da API (se exigir autenticação, envie o token)
+  const response = await fetch("http://localhost:5042/api/Produto", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  if (!response.ok) {
+    throw new Response("Erro ao buscar os dados da API", { status: 500 });
+  }
+
+  const productList = await response.json();
+
+  // Envia ambos para o front
+  return json({ productList, currentUser });
+};
 
 export default function MainShop() {
+  const {productList, currentUser} = useLoaderData();
+  console.log(productList)
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-center mb-4 font-montserrat">Loja</h1>
-      <h2 className="text-xl text-center mb-8 font-montserrat">Explore nossos produtos</h2>
+      <h1 className="h1-center">Loja</h1>
+      <h2 className="h2-center">Explore nossos produtos</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {produtos.map((produto) => (
+        {productList.map((produto) => (
           <ShopCard key={produto.id} produto={produto} />
         ))}
       </div>

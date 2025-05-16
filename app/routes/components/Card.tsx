@@ -65,7 +65,6 @@ export default function Card({
     if (podeConfirmarResultado) {
       setExpandido(true);
     }
-    // eslint-disable-next-line
   }, [podeConfirmarResultado]);
 
   const handleChange = (idx: number, value: string) => {
@@ -74,77 +73,115 @@ export default function Card({
     setInputs(novoArray);
   };
 
-const handleConfirmarResultado = async () => {
-  try {
-    const payload = { Status: "Finalizado" };
-    const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      alert("Erro ao confirmar o resultado: " + errorText);
-      return;
-    }
-    // Recarrega
-    window.location.reload();
-  } catch (error) {
-    alert("Erro ao tentar confirmar o resultado!");
-  }
-};
-
-const handleLancarResultado = async () => {
-  try {
-    let imgBase64: string | null = null;
-
-    if (imgFile) {
-      imgBase64 = await new Promise<string | null>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          const base64 = result.split(",")[1] || result;
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(imgFile);
+  // Função para aumentar a vitória do vencedor
+  const atualizarVitoriasVencedor = async (vencedorId: number | string) => {
+    try {
+      const userRes = await fetch(`http://localhost:5042/api/Users/${vencedorId}`, {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
       });
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        const novasVitorias = (userData.vitorias ?? 0) + 1;
+        await fetch(`http://localhost:5042/api/Users/${vencedorId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`
+          },
+          body: JSON.stringify({ ...userData, vitorias: novasVitorias }),
+        });
+      }
+    } catch (userErr) {
+      alert("Erro ao atualizar contagem de vitórias do vencedor.");
     }
+  };
 
-    const payload: any = {
-      Jog1_G1: inputs[0],
-      Jog1_G2: inputs[1],
-      Jog2_G1: inputs[2],
-      Jog2_G2: inputs[3],
-      Status: "Resultado",
-      Relator: String(currentUserId),
-    };
-    if (imgBase64) payload.Img = imgBase64;
+  // Função chamada ao lançar resultado
+  const handleLancarResultado = async () => {
+    try {
+      let imgBase64: string | null = null;
 
-    const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
+      if (imgFile) {
+        imgBase64 = await new Promise<string | null>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(",")[1] || result;
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(imgFile);
+        });
+      }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      alert("Erro ao salvar o resultado no servidor: " + errorText);
-      return;
+      const payload: any = {
+        Jog1_G1: inputs[0],
+        Jog1_G2: inputs[1],
+        Jog2_G1: inputs[2],
+        Jog2_G2: inputs[3],
+        Status: "Resultado",
+        Relator: String(currentUserId),
+      };
+      if (imgBase64) payload.Img = imgBase64;
+
+      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Erro ao salvar o resultado no servidor: " + errorText);
+        return;
+      }
+
+      // Lógica para descobrir o vencedor:
+      const pontosJogador1 = inputs[0] + inputs[1];
+      const pontosJogador2 = inputs[2] + inputs[3];
+      let vencedorId = null;
+      if (pontosJogador1 > pontosJogador2) {
+        vencedorId = id_jogador_1;
+      } else if (pontosJogador2 > pontosJogador1) {
+        vencedorId = id_jogador_2;
+      }
+      // Se houver vencedor, aumenta vitorias
+      if (vencedorId) {
+        await atualizarVitoriasVencedor(vencedorId);
+      }
+
+      window.location.reload();
+    } catch (err) {
+      alert("Erro ao tentar lançar o resultado.");
     }
+  };
 
-    // Recarrega
-    window.location.reload();
-  } catch (err) {
-    alert("Erro ao tentar lançar o resultado.");
-  }
-};
+  // Se quiser que ao confirmar resultado também aumente vitória, basta adaptar sua regra aqui
+
+  const handleConfirmarResultado = async () => {
+    try {
+      const payload = { Status: "Finalizado" };
+      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Erro ao confirmar o resultado: " + errorText);
+        return;
+      }
+      window.location.reload();
+    } catch (error) {
+      alert("Erro ao tentar confirmar o resultado!");
+    }
+  };
 
   return (
     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-4">
