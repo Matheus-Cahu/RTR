@@ -41,6 +41,10 @@ export default function RankingPage() {
 
   console.log(userList);
   console.log("Current User: ", currentUser);
+  console.log("Notifications: ", notifications);
+  const notiList = notifications.filter((noti) => noti.dest.includes(currentUser.id.toString()) && noti.seen === false);
+  console.log("Current User ID: ", currentUser.id.toString());
+  console.log("Filtered Notifications: ", notiList);
   return (
     <div>
       <h1 className="h1-center mb-6">Ranking</h1>
@@ -49,7 +53,7 @@ export default function RankingPage() {
         <a href="/main/marcar_jogo">
           <button className="btn-azul mb-2">Marcar Jogo</button>
         </a>
-        <Notificacoes notifications={notifications} />
+        <Notificacoes notifications={notiList} />
         <a href="/main/rules">
           <Info className="text-black w-8 h-8" />
         </a>

@@ -78,9 +78,9 @@ export default function MarcarJogo() {
       // Redirecione após sucesso
 
       const notificationBody = {
-        Dest: { selectedUserId },
+        Dest: [ selectedUserId ],
         Titulo: "Novo Jogo",
-        Conteudo: `Você tem um novo jogo marcado com ${currentUser.name} no local ${local} na data ${data} esperando sua aprovação.`,
+        Conteudo: `Você tem um novo jogo com ${currentUser.name} no local ${local} na data ${data} esperando sua aprovação.`,
         Forall: false,
         Seen: false
       }

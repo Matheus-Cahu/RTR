@@ -11,15 +11,13 @@ namespace MeuProjetoApi.Models
             Conteudo = string.Empty;
             Titulo = string.Empty;
             Id = 0;
-            Dest = [];
-            Forall = false;
+            Dest = string.Empty;
             Seen = false;
         }
         public string Conteudo { get; set; }
         public string Titulo { get; set; }
         public int Id { get; set; }
-        public string[] Dest { get; set; }
-        public bool Forall { get; set; }
+        public string Dest { get; set; }
         public bool Seen { get; set; }
     }
 }
