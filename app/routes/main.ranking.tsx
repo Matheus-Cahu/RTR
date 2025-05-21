@@ -38,13 +38,32 @@ export const loader = async ({ request }) => {
 
 export default function RankingPage() {
   const { userList, currentUser, notifications } = useLoaderData();
-
   console.log(userList);
   console.log("Current User: ", currentUser);
   console.log("Notifications: ", notifications);
+
+    const handleDelete = async (id) => {
+    const token = currentUser.token;
+
+    const response = await fetch(`http://localhost:5042/api/Notificacoes/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Erro ao deletar a notificação");
+    } else {
+      console.log("Notificação deletada com sucesso");
+    }
+  };
+
   const notiList = notifications.filter((noti) => noti.dest.includes(currentUser.id.toString()) && noti.seen === false);
   console.log("Current User ID: ", currentUser.id.toString());
   console.log("Filtered Notifications: ", notiList);
+
   return (
     <div>
       <h1 className="h1-center mb-6">Ranking</h1>
@@ -53,7 +72,7 @@ export default function RankingPage() {
         <a href="/main/marcar_jogo">
           <button className="btn-azul mb-2">Marcar Jogo</button>
         </a>
-        <Notificacoes notifications={notiList} />
+        <Notificacoes notifications={notiList} deleteFunction={handleDelete} />
         <a href="/main/rules">
           <Info className="text-black w-8 h-8" />
         </a>
