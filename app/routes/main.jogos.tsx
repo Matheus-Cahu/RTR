@@ -1,3 +1,4 @@
+import React from "react";
 import Card from "./components/Card";
 import CardFinalizados from "./components/CardFinalizados";
 import { json } from "@remix-run/node";
@@ -43,71 +44,72 @@ export const action = async ({ request }) => {
   const jogoId = formData.get("jogoId");
   const actionType = formData.get("actionType");
 
-  if (actionType === "aceitar") {
-    try {
+  try {
+    if (actionType === "aceitar") {
       const payload = { status: "Agendado" };
-      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `http://localhost:5042/api/Jogos/${jogoId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
         return json({ success: false, error: errorText });
       }
       return json({ success: true });
-    } catch (err) {
-      return json({ success: false, error: err.message });
     }
-  }
 
-  if (actionType === "negar") {
-    try {
-      const response = await fetch(`http://localhost:5042/api/Jogos/${jogoId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (actionType === "negar") {
+      const response = await fetch(
+        `http://localhost:5042/api/Jogos/${jogoId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
         return json({ success: false, error: errorText });
       }
       return json({ success: true });
-    } catch (err) {
-      return json({ success: false, error: err.message });
     }
+  } catch (err) {
+    return json({ success: false, error: err.message });
   }
+
   return json({ success: false, error: "Ação desconhecida" });
 };
 
 export default function Jogos() {
   const fetcher = useFetcher();
-  // Sempre inicializando variáveis caso a API falhe
   const data = useLoaderData() || {};
-  const {
-    userList = [],
-    jogosList = [],
-    currentUser = null,
-  } = data;
+  const { userList = [], jogosList = [], currentUser = null } = data;
 
   function handleAceitar(jogoId) {
-    fetcher.submit({ jogoId, actionType: "aceitar" }, { method: "post" });
+    fetcher.submit({ jogoId, actionType: "aceitar" }, { method: "post" }).then(() => {
+      window.location.reload();
+    });
   }
 
   function handleNegar(jogoId) {
-    fetcher.submit({ jogoId, actionType: "negar" }, { method: "post" });
+    fetcher.submit({ jogoId, actionType: "negar" }, { method: "post" }).then(() => {
+      window.location.reload();
+    });
   }
 
   const getUserById = (id) =>
-    userList.find((user) => user.id == id || user.ID == id);
+    userList.find((user) => user.id === id || user.ID === id);
 
-  // Uso de filtros já prontos para não duplicar lógica
   const jogosMarcadosOuResultado = jogosList.filter(
     (jogo) => jogo.status === "Agendado" || jogo.status === "Resultado"
   );
@@ -115,7 +117,6 @@ export default function Jogos() {
     (jogo) => jogo.status === "Finalizado"
   );
 
-  // Mensagem de nenhum jogo encontrado
   function NenhumJogo({ texto }) {
     return (
       <div className="flex flex-col items-center justify-center w-full py-12 text-gray-600">
@@ -127,7 +128,6 @@ export default function Jogos() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 mb-6 p-6">
-      {/* Solicitações pendentes de aceite */}
       {jogosList
         .filter(
           (jogo) =>
@@ -146,7 +146,6 @@ export default function Jogos() {
           />
         ))}
 
-      {/* Jogos Marcados */}
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Jogos Marcados</h1>
       {jogosMarcadosOuResultado.length === 0 ? (
         <NenhumJogo texto="Nenhum jogo marcado ou aguardando confirmação." />
@@ -181,7 +180,6 @@ export default function Jogos() {
         </div>
       )}
 
-      {/* Jogos Finalizados */}
       <h1 className="text-3xl font-bold text-gray-800 mt-6 mb-6">Jogos Finalizados</h1>
       {jogosFinalizados.length === 0 ? (
         <NenhumJogo texto="Nenhum jogo finalizado no momento." />

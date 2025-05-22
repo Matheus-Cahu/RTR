@@ -99,7 +99,7 @@ export default function MarcarJogo() {
       console.log("Notificação enviada com sucesso!");
 
 
-      //navigate("/main/jogos");
+      navigate("/main/jogos");
     } catch (error) {
       console.error("Erro ao cadastrar jogo:", error);
     }
