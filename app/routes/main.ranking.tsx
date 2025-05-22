@@ -58,6 +58,7 @@ export default function RankingPage() {
     } else {
       console.log("Notificação deletada com sucesso");
     }
+    window.location.reload();
   };
 
   const notiList = notifications.filter((noti) => noti.dest.includes(currentUser.id.toString()) && noti.seen === false);

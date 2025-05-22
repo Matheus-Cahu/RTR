@@ -1,17 +1,34 @@
-// NotificationBell.jsx
 import { useState } from "react";
 import { Bell, Trash } from "lucide-react";
 
-export default function Notificacoes({ notifications, deleteFunction}){
+export default function Notificacoes({ notifications, deleteFunction }) {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("Tipo de deleteFunction:", typeof deleteFunction);
+
+  // Verifique se há notificações não lidas
+  const hasUnreadNotifications = notifications.some(notification => !notification.seen);
+
+  const updateSeen = () => {
+    notifications.forEach(notification => {
+      if (!notification.seen) {
+        // Atualize o estado da notificação para 'seen = true'
+        notification.seen = true;
+      }
+    });
+  };
+
   const toggleNotifications = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      updateSeen();
+    }
   };
 
   return (
     <div style={containerStyle}>
-      <Bell onClick={toggleNotifications} style={bellStyle} />
+      <div style={iconWrapperStyle}>
+        <Bell onClick={toggleNotifications} style={bellStyle} />
+        {hasUnreadNotifications && <div style={unreadDotStyle} />}
+      </div>
 
       {isOpen && (
         <div style={notificationStyle}>
@@ -33,10 +50,24 @@ const containerStyle = {
   display: 'inline-block',
 };
 
+const iconWrapperStyle = {
+  position: 'relative',
+};
+
 const bellStyle = {
   cursor: 'pointer',
   fontSize: '60px',
   color: "black",
+};
+
+const unreadDotStyle = {
+  position: 'absolute',
+  top: '0',
+  right: '0',
+  height: '10px',
+  width: '10px',
+  backgroundColor: 'red',
+  borderRadius: '50%',
 };
 
 const notificationStyle = {
