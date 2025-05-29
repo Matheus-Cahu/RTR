@@ -15,6 +15,7 @@ namespace MeuProjetoApi.Models
             Colors = new string[0];
             Sizes = new int[0];
             Img = null;
+            PriceId = string.Empty;
         }
 
         public string Name { get; set; }
@@ -25,5 +26,6 @@ namespace MeuProjetoApi.Models
         public string[]? Colors { get; set; }
         public int[]? Sizes { get; set; }
         public byte[]? Img { get; set; }
+        public string PriceId { get; set; }
     }
 }

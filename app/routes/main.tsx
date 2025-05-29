@@ -3,7 +3,7 @@ import Footer from "./components/Footer";
 
 export default function Main(){
     return(
-        <div className="flex flex-col min-h-screen bg-cover bg-center bg-white">
+        <div className="flex flex-col min-h-screen bg-cover bg-center bg-red">
             <div className="flex justify-center mt-8 mb-6">
                 <img
                     src="/logo_dark.png"
@@ -13,8 +13,8 @@ export default function Main(){
             </div>
             <div className="flex-1 flex flex-col items-center">
                 <Outlet />
+                <Footer />
             </div>
-            <Footer />
         </div>
     )
 }

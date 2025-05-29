@@ -4,26 +4,26 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white text-black;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+:root {
+  color-scheme: light;
 }
 
 .h1 {
   @apply text-2xl font-montserrat text-black;
 }
 
-.h1-center{
+.h1-center {
   @apply text-2xl text-center font-montserrat text-black;
 }
 
-.h2-center{
+.h2-center {
   @apply text-xl text-center font-montserrat text-black;
 }
 
-.h3-center{
+.h3-center {
   @apply text-lg text-center font-montserrat text-black;
 }
 
