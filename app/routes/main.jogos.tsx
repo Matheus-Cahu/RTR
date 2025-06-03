@@ -107,8 +107,23 @@ export default function Jogos() {
     });
   }
 
-  const getUserById = (id) =>
-    userList.find((user) => user.id === id || user.ID === id);
+  const getUserById = (id) => {
+    if(!id) return null;
+
+    const idString = String(id);
+
+    const user = userList.find((user) => {
+      return String(user.id) === idString ||
+        String(user.ID) === idString ||
+        String(user.id) === idString;
+    });
+
+    if(!user){
+      console.log(`Usuário com ID ${id} não encontrado na lista de ${userList.length} usuários`);
+      console.log("Primieros 3 usuários na lista:", userList.slice(0, 3));
+    }
+    return user;
+  };
 
   const jogosMarcadosOuResultado = jogosList.filter(
     (jogo) => jogo.status === "Agendado" || jogo.status === "Resultado"

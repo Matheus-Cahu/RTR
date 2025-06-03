@@ -242,5 +242,42 @@ public async Task<IActionResult> Login([FromBody] LoginDto LoginDto)
         {
             return _context.Users.Any(e => e.ID == id);
         }
-         }
-       }
+
+
+[HttpPatch("{id}/ranking")]
+public async Task<IActionResult>PatchRanking(int id,[FromBody] RankingUpdateDto updateDto)
+{
+  var user = await _context.Users.FindAsync(id);
+  if(user == null)
+  {
+  Console.WriteLine($"Usuário com ID{id} não encontrado");
+  return NotFound($"Usuário com ID {id} não encontrado");
+  
+}
+
+user.Ranking = updateDto.Ranking;
+user.Chave = updateDto.Chave;
+user.Vitorias = updateDto.Vitorias;
+
+try
+{
+await _context.SaveChangesAsync();
+Console.WriteLine($"Usuário ID {id} atualizado com sucesso");
+}
+catch (DbUpdateConcurrencyException ex)
+{
+Console.WriteLine($"Erro ao atualizar usuário: {ex.Message}");
+if(!UserExists(id))
+{
+  return NotFound();
+}
+else{
+  throw;
+}
+}
+return NoContent();
+}
+}
+}
+
+

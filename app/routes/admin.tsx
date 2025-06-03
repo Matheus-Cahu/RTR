@@ -1,6 +1,7 @@
 import {useLoaderData, json, redirect} from "@remix-run/react";
 import {getSession} from "../session.server";
 import Ranking from "./components/Ranking";
+import Button from "./components/Ranking";
 
 async function updateUserRankingData(userId, newRanking, newChave, newVitorias, token){
   try{
@@ -114,7 +115,8 @@ return sortedList
     return(
       <div>
         <h1>Bem vindo, {currentUser.name}</h1>
-        <button onClick={updateRanking}>Atualizar o ranking</button>
+        <button onClick={updateRanking} className="btn-azul">Atualizar o ranking</button>
+        <Ranking userList={userList}/>
       </div>
   )
     }
