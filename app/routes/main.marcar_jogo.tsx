@@ -19,22 +19,38 @@ export const loader = async ({ request }) => {
     throw new Response("Erro ao buscar os dados", { status: response.status });
   }
 
+  const responseJogos = await fetch("http://localhost:5042/api/Jogos", {
+    headers: {Authorization: `Bearer ${token}` },
+  });
+
+  if (!responseJogos.ok){
+    throw new Response("Erro ao buiscar os jogos", {status: responseJogos.status });
+  }
+
+
+  const jogosList = await responseJogos.json();
   const userList = await response.json();
-  return json({ userList, currentUser });
+  return json({ userList, currentUser, jogosList});
 };
 
 export default function MarcarJogo() {
-  const { userList, currentUser } = useLoaderData();
-  console.log(userList)
-  console.log("Current User: ", currentUser);
-  console.log("Current User Chave: ", userList.find(user => user.id === currentUser.id).chave);
-  console.log("Usuários da sua chave: ", userList.filter(user => user.chave === userList.find(user => user.id === currentUser.id).chave));
-  // Estados para os campos do formulário
+  const { userList, currentUser, jogosList } = useLoaderData();
+  const chaveOptions = userList.filter(user => user.chave === userList.find(user => user.id === currentUser.id).chave);
+  
   const [selectedUserId, setSelectedUserId] = useState("");
   const [local, setLocal] = useState("");
   const [data, setData] = useState(""); // caso queira adicionar campo de data futuramente
 
-  // Função de submit
+ const optionsMinusCurrent = chaveOptions.filter(user => user.id !== currentUser.id); 
+  const availableUsers = optionsMinusCurrent.filter(user => {
+
+    const alreadyPlayed = jogosList.some(jogo => (jogo.Jogador1 === currentUser.id && jogo.Jogador2 === user.id) || (jogo.Jogador1 === user.id && jogo.Jogador2 === currentUser.id)
+                                                                                                                 );
+                                                                                                                 return !alreadyPlayed;
+  });
+
+  console.log("Already Played", availableUsers);
+
   const handleMarcar = async (e) => {
     e.preventDefault(); // Previne comportamento padrão do submit
   
@@ -118,15 +134,7 @@ export default function MarcarJogo() {
           <option value="" disabled>
             Selecione o adversário
           </option>
-          {userList
-            .filter(
-              (user) =>  user.chave === userList.find(user => user.id === currentUser.id).chave && user.id !== currentUser.id
-            )
-            .map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
+          {availableUsers.map}
         </select>
 
         <Input
