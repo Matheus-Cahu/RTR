@@ -9,6 +9,7 @@ namespace MeuProjetoApi.Models
         public int Vitorias { get; set; }
         public int Chave { get; set; }
         public string? ImgBase64 { get; set; }
+        public bool? Admin { get; set; }
 
         // Construtor para facilitar a conversão de User para UserDto
         public UserDto(User user)
@@ -20,6 +21,7 @@ namespace MeuProjetoApi.Models
             Vitorias = user.Vitorias;
             Chave = user.Chave;
             ImgBase64 = user.Img != null ? $"data:image/png;base64,{Convert.ToBase64String(user.Img)}" : null;
+            Admin = user.Admin;
         }
     }
 }

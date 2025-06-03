@@ -13,6 +13,7 @@ namespace MeuProjetoApi.Models
             Vitorias = 0;
             Chave = 0;
             Img = null; // Permite que Img seja nulo
+            Admin = false;
         }
 
         public int ID { get; set; }
@@ -24,5 +25,6 @@ namespace MeuProjetoApi.Models
         public int Vitorias { get; set; }
         public int Chave { get; set; }
         public byte[]? Img { get; set; } // Agora Img pode ser nulo
+        public bool? Admin { get; set; }
     }
 }

@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MeuProjetoApi.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 // --- INÍCIO CONFIGURAÇÃO DO APP ---
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +21,12 @@ builder.Services.AddCors(options =>
 
 // ---------> INCLUA ESSA LINHA AQUI <---------
 builder.Services.AddControllers()
-    .AddNewtonsoftJson(); // <-- Suporte ao Newtonsoft.Json!
+    .AddNewtonsoftJson(options => 
+        {
+
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        }); 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
